@@ -1,6 +1,5 @@
 package com.hyunho9877.chatter.config;
 
-import com.hyunho9877.chatter.handler.ChattingHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.WebSocketHandler;
