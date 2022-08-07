@@ -1,10 +1,9 @@
 package com.hyunho9877.chatter.domain;
-
 import com.hyunho9877.chatter.utils.converter.GenderConverter;
+import com.hyunho9877.chatter.utils.converter.RoleConverter;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Collection;
 
 @Entity
 @Getter
@@ -15,21 +14,13 @@ import java.util.Collection;
 @AllArgsConstructor
 public class User {
     @Id
-    @Column
     private String email;
-    @Column
     private String password;
-    @Column
     private String name;
-    @Column
     private Integer age;
-    @Column
     @Convert(converter = GenderConverter.class)
     private Gender gender;
-    @ManyToMany(fetch = FetchType.EAGER)
-    private Collection<Role> roles;
+    @Convert(converter = RoleConverter.class)
+    private Role role;
 
-    public enum Gender {
-        MALE, FEMALE
-    }
 }

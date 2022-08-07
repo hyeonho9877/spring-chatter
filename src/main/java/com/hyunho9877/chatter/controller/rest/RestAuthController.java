@@ -3,6 +3,7 @@ package com.hyunho9877.chatter.controller.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.hyunho9877.chatter.domain.Role;
+import com.hyunho9877.chatter.domain.User;
 import com.hyunho9877.chatter.dto.UserDto;
 import com.hyunho9877.chatter.service.interfaces.AuthService;
 import lombok.Data;
@@ -14,12 +15,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.w3c.dom.stylesheets.LinkStyle;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
 import static com.google.common.net.HttpHeaders.AUTHORIZATION;
@@ -52,15 +55,9 @@ public class RestAuthController {
         return !authService.isDuplicated(email);
     }
 
-    @PostMapping("/role/new")
-    public ResponseEntity<Role> saveRole(Role role) {
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/v1/auth/role/new").toUriString());
-        return ResponseEntity.created(uri).body(authService.registerNewRole(role));
-    }
-
     @PostMapping("/role/add-to-user")
     public ResponseEntity<?> addRoleToUser(RoleToUserForm form) {
-        authService.addRoleToUser(form.getEmail(), form.getRoleName());
+        authService.addRoleToUser(form.getEmail(), form.getRole());
         return ResponseEntity.ok().build();
     }
 
@@ -75,10 +72,15 @@ public class RestAuthController {
             new ObjectMapper().writeValue(response.getOutputStream(), "Refresh Token Missing!");
         }
     }
+
+    @GetMapping("/all-users")
+    public ResponseEntity<List<User>> allUsers() {
+        return ResponseEntity.ok(authService.getAllUsers());
+    }
 }
 
 @Data
 class RoleToUserForm {
     private String email;
-    private String roleName;
+    private Role role;
 }

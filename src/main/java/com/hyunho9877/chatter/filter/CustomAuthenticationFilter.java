@@ -47,7 +47,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .setSubject(user.getUsername())
                 .setExpiration(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
                 .setIssuer(request.getRequestURL().toString())
-                .claim("roles", user.getAuthorities())
+                .claim(config.getRoleHeader(), user.getAuthorities())
                 .signWith(secretKey)
                 .compact();
 

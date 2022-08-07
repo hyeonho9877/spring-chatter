@@ -1,6 +1,6 @@
 package com.hyunho9877.chatter.utils.converter;
 
-import com.hyunho9877.chatter.domain.User.Gender;
+import com.hyunho9877.chatter.domain.Gender;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

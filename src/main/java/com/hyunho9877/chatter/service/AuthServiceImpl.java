@@ -4,7 +4,6 @@ import com.hyunho9877.chatter.config.JwtConfig;
 import com.hyunho9877.chatter.domain.Role;
 import com.hyunho9877.chatter.domain.User;
 import com.hyunho9877.chatter.dto.UserDto;
-import com.hyunho9877.chatter.repo.RoleRepository;
 import com.hyunho9877.chatter.repo.UserRepository;
 import com.hyunho9877.chatter.service.interfaces.AuthService;
 import io.jsonwebtoken.Claims;
@@ -29,7 +28,6 @@ import java.util.*;
 @Transactional
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
     private final SecretKey secretKey;
     private final JwtConfig jwtConfig;
@@ -46,22 +44,19 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Role registerNewRole(Role role) {
-        log.info("Saving new role {} to the database", role.getName());
-        return roleRepository.save(role);
-    }
-
-    @Override
-    public void addRoleToUser(String email, String roleName) {
+    public void addRoleToUser(String email, Role role) {
         User user = userRepository.findById(email).orElseThrow();
-        Role role = roleRepository.findById(roleName).orElseThrow();
-        log.info("Adding new role {} to User {}", roleName, email);
-        user.getRoles().add(role);
+        user.setRole(role);
     }
 
     @Override
     public Optional<User> getUser(String email) {
         return userRepository.findById(email);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     @Override
@@ -72,7 +67,8 @@ public class AuthServiceImpl implements AuthService {
                 .name(userDto.getFirstName() + userDto.getLastName())
                 .age(userDto.getAge())
                 .gender(userDto.getGender())
-                .roles(new ArrayList<>()).build();
+                .role(Role.USER)
+                .build();
     }
 
     @Override
@@ -81,10 +77,10 @@ public class AuthServiceImpl implements AuthService {
             log.error("There is no user with " + email);
             throw new UsernameNotFoundException("There is no user with " + email);
         });
-        log.info("Found user with " + email);
-        List<SimpleGrantedAuthority> authorities = user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).toList();
-        log.info("user : {}, authorities : {}", user.getName(), authorities);
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
+        return new org.springframework.security.core.userdetails.User(
+                user.getEmail(),
+                user.getPassword(),
+                List.of(new SimpleGrantedAuthority(user.getRole().name())));
     }
 
     @Override
@@ -100,7 +96,7 @@ public class AuthServiceImpl implements AuthService {
                     .setSubject(user.getEmail())
                     .setExpiration(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
                     .setIssuer(issuer)
-                    .claim("roles", user.getRoles())
+                    .claim(jwtConfig.getRoleHeader(), user.getRole())
                     .signWith(secretKey)
                     .compact();
 

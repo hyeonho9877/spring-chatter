@@ -2,6 +2,7 @@ package com.hyunho9877.chatter.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import com.hyunho9877.chatter.config.JwtConfig;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtParser;
@@ -32,10 +33,11 @@ import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     private final SecretKey secretKey;
+    private final JwtConfig jwtConfig;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (request.getServletPath().equals("/v1/auth/do") || request.getServletPath().equals("v1/auth/token/refresh")) filterChain.doFilter(request, response);
+        if (request.getServletPath().equals("/v1/auth/do") || request.getServletPath().equals("/v1/auth/token/refresh")) filterChain.doFilter(request, response);
         else {
             String token = request.getHeader(AUTHORIZATION);
             if(!Strings.isNullOrEmpty(token)){
@@ -45,7 +47,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                             .build();
                     Jws<Claims> jws = parser.parseClaimsJws(token);
                     String username = jws.getBody().getSubject();
-                    List<LinkedHashMap<String, ?>> roles = (List<LinkedHashMap<String, ?>>) jws.getBody().get("roles");
+                    List<LinkedHashMap<String, ?>> roles = (List<LinkedHashMap<String, ?>>) jws.getBody().get(jwtConfig.getRoleHeader());
                     List<SimpleGrantedAuthority> authorities = roles.stream().map(role -> role.get("authority")).map(role->new SimpleGrantedAuthority(role.toString())).toList();
                     log.info("authorities : {}", authorities);
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);

@@ -1,5 +1,6 @@
 package com.hyunho9877.chatter.user;
 
+import com.hyunho9877.chatter.domain.Gender;
 import com.hyunho9877.chatter.domain.User;
 import com.hyunho9877.chatter.dto.UserDto;
 import com.hyunho9877.chatter.service.interfaces.UserService;
@@ -31,7 +32,7 @@ public class SignUpTest {
         userDto.setFirstName("first");
         userDto.setLastName("last");
         userDto.setAge(15);
-        userDto.setGender(User.Gender.MALE);
+        userDto.setGender(Gender.MALE);
 
         User user = userService.registerNewUserAccount(userService.buildUser(userDto)).orElseThrow();
         assertThat(user.getName()).isEqualTo(userDto.getFirstName() + userDto.getLastName());
@@ -50,7 +51,7 @@ public class SignUpTest {
         userDto1.setFirstName("first");
         userDto1.setLastName("last");
         userDto1.setAge(15);
-        userDto1.setGender(User.Gender.MALE);
+        userDto1.setGender(Gender.MALE);
         userService.registerNewUserAccount(userService.buildUser(userDto1)).orElseThrow();
 
         UserDto userDto2 = new UserDto();
@@ -60,7 +61,7 @@ public class SignUpTest {
         userDto2.setFirstName("first");
         userDto2.setLastName("last");
         userDto2.setAge(15);
-        userDto2.setGender(User.Gender.MALE);
+        userDto2.setGender(Gender.MALE);
 
         assertThat(userService.registerNewUserAccount(userService.buildUser(userDto2))).isEqualTo(Optional.empty());
     }
