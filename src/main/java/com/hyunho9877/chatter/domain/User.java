@@ -3,10 +3,8 @@ package com.hyunho9877.chatter.domain;
 import com.hyunho9877.chatter.utils.converter.GenderConverter;
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.Collection;
 
 @Entity
 @Getter
@@ -24,10 +22,12 @@ public class User {
     @Column
     private String name;
     @Column
-    private int age;
+    private Integer age;
     @Column
     @Convert(converter = GenderConverter.class)
     private Gender gender;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Collection<Role> roles;
 
     public enum Gender {
         MALE, FEMALE
