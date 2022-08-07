@@ -1,8 +1,9 @@
 package com.hyunho9877.chatter.user;
 
+import com.hyunho9877.chatter.domain.Gender;
 import com.hyunho9877.chatter.domain.User;
 import com.hyunho9877.chatter.dto.UserDto;
-import com.hyunho9877.chatter.service.interfaces.UserServiceProvider;
+import com.hyunho9877.chatter.service.interfaces.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SignUpTest {
 
     @Autowired
-    private UserServiceProvider userService;
+    private UserService userService;
 
 
     @Test
@@ -31,9 +32,9 @@ public class SignUpTest {
         userDto.setFirstName("first");
         userDto.setLastName("last");
         userDto.setAge(15);
-        userDto.setGender(User.Gender.MALE);
+        userDto.setGender(Gender.MALE);
 
-        User user = userService.registerNewUserAccount(userDto).orElseThrow();
+        User user = userService.registerNewUserAccount(userService.buildUser(userDto)).orElseThrow();
         assertThat(user.getName()).isEqualTo(userDto.getFirstName() + userDto.getLastName());
         assertThat(user.getEmail()).isEqualTo(userDto.getEmail());
         assertThat(user.getAge()).isSameAs(userDto.getAge());
@@ -50,8 +51,8 @@ public class SignUpTest {
         userDto1.setFirstName("first");
         userDto1.setLastName("last");
         userDto1.setAge(15);
-        userDto1.setGender(User.Gender.MALE);
-        userService.registerNewUserAccount(userDto1).orElseThrow();
+        userDto1.setGender(Gender.MALE);
+        userService.registerNewUserAccount(userService.buildUser(userDto1)).orElseThrow();
 
         UserDto userDto2 = new UserDto();
         userDto2.setEmail("invalidMail");
@@ -60,8 +61,8 @@ public class SignUpTest {
         userDto2.setFirstName("first");
         userDto2.setLastName("last");
         userDto2.setAge(15);
-        userDto2.setGender(User.Gender.MALE);
+        userDto2.setGender(Gender.MALE);
 
-        assertThat(userService.registerNewUserAccount(userDto2)).isEqualTo(Optional.empty());
+        assertThat(userService.registerNewUserAccount(userService.buildUser(userDto2))).isEqualTo(Optional.empty());
     }
 }

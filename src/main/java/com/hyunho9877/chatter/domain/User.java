@@ -1,12 +1,9 @@
 package com.hyunho9877.chatter.domain;
-
 import com.hyunho9877.chatter.utils.converter.GenderConverter;
+import com.hyunho9877.chatter.utils.converter.RoleConverter;
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -17,19 +14,13 @@ import javax.persistence.Id;
 @AllArgsConstructor
 public class User {
     @Id
-    @Column
     private String email;
-    @Column
     private String password;
-    @Column
     private String name;
-    @Column
-    private int age;
-    @Column
+    private Integer age;
     @Convert(converter = GenderConverter.class)
     private Gender gender;
+    @Convert(converter = RoleConverter.class)
+    private Role role;
 
-    public enum Gender {
-        MALE, FEMALE
-    }
 }

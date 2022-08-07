@@ -1,6 +1,6 @@
 package com.hyunho9877.chatter.dto;
 
-import com.hyunho9877.chatter.domain.User.Gender;
+import com.hyunho9877.chatter.domain.Gender;
 import com.hyunho9877.chatter.utils.validators.PasswordMatches;
 import com.hyunho9877.chatter.utils.validators.ValidEmail;
 import com.sun.istack.NotNull;
