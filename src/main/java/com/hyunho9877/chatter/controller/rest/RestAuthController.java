@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.hyunho9877.chatter.domain.Role;
 import com.hyunho9877.chatter.domain.User;
+import com.hyunho9877.chatter.dto.RoleToUser;
 import com.hyunho9877.chatter.dto.UserDto;
 import com.hyunho9877.chatter.service.interfaces.AuthService;
 import lombok.Data;
@@ -56,7 +57,7 @@ public class RestAuthController {
     }
 
     @PostMapping("/role/add-to-user")
-    public ResponseEntity<?> addRoleToUser(RoleToUserForm form) {
+    public ResponseEntity<?> addRoleToUser(RoleToUser form) {
         authService.addRoleToUser(form.getEmail(), form.getRole());
         return ResponseEntity.ok().build();
     }
@@ -77,10 +78,4 @@ public class RestAuthController {
     public ResponseEntity<List<User>> allUsers() {
         return ResponseEntity.ok(authService.getAllUsers());
     }
-}
-
-@Data
-class RoleToUserForm {
-    private String email;
-    private Role role;
 }
