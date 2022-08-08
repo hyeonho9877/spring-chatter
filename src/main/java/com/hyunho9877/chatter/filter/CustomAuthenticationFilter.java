@@ -15,7 +15,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import javax.crypto.SecretKey;
 import javax.servlet.FilterChain;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -26,7 +28,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final JwtConfig config;
+    private final JwtConfig jwtConfig;
     private final SecretKey secretKey;
     private final AuthenticationManager authenticationManager;
 
@@ -43,24 +45,34 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         User user = (User) authentication.getPrincipal();
         log.info("authenticated user : {}, authorities : {}", user.getUsername(), user.getAuthorities());
+        Date accessTokenExp = new Date(System.currentTimeMillis() + 10 * 60 * 1000);
         String accessToken = Jwts.builder()
                 .setSubject(user.getUsername())
-                .setExpiration(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
+                .setExpiration(accessTokenExp)
                 .setIssuer(request.getRequestURL().toString())
-                .claim(config.getRoleHeader(), user.getAuthorities())
+                .claim(jwtConfig.getRoleHeader(), user.getAuthorities())
                 .signWith(secretKey)
                 .compact();
 
+        Date refreshTokenExp = new Date(System.currentTimeMillis() + 30 * 60 * 1000);
         String refreshToken = Jwts.builder()
                 .setSubject(user.getUsername())
-                .setExpiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
+                .setExpiration(refreshTokenExp)
                 .setIssuer(request.getRequestURL().toString())
                 .signWith(secretKey)
                 .compact();
 
 //        response.setHeader(config.getAccessTokenHeader(), accessToken);
 //        response.setHeader(config.getRefreshTokenHeader(), refreshToken);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        new ObjectMapper().writeValue(response.getOutputStream(), Map.of(config.getAccessTokenHeader(), accessToken, config.getRefreshTokenHeader(), refreshToken));
+        Cookie accessCookie = new Cookie(jwtConfig.getAccessTokenHeader(), accessToken);
+        accessCookie.setHttpOnly(true);
+        accessCookie.setMaxAge(10 * 60 * 1000);
+
+        Cookie refreshCookie = new Cookie(jwtConfig.getRefreshTokenHeader(), refreshToken);
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setMaxAge(30 * 60 * 1000);
+
+        response.addCookie(accessCookie);
+        response.addCookie(refreshCookie);
     }
 }

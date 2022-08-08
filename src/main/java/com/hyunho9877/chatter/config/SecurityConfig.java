@@ -18,6 +18,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 
+import static com.hyunho9877.chatter.domain.Role.*;
+
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -39,7 +41,7 @@ public class SecurityConfig {
                 .cors().and()
                 .headers().frameOptions().disable().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/v1/auth/users").hasAnyAuthority("ROLE_ADMIN").and()
+                .authorizeRequests().antMatchers("/v1/auth/all-users").hasAnyAuthority(ADMIN.name(), MANAGER.name()).and()
                 .addFilter(authenticationFilter)
                 .addFilterBefore(new CustomAuthorizationFilter(secretKey(), config), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()

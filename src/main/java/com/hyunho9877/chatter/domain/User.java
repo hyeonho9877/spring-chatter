@@ -22,5 +22,4 @@ public class User {
     private Gender gender;
     @Convert(converter = RoleConverter.class)
     private Role role;
-
 }
