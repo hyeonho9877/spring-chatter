@@ -3,6 +3,7 @@ package com.hyunho9877.chatter.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.hyunho9877.chatter.config.JwtConfig;
+import com.hyunho9877.chatter.utils.cookie.CookieParser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtParser;
@@ -22,7 +23,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +36,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private final SecretKey secretKey;
     private final JwtConfig jwtConfig;
     private final FilterChainValidator filterChainValidator;
+    private final CookieParser cookieParser;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -43,7 +44,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         if (filterChainValidator.validate(request.getServletPath())) filterChain.doFilter(request, response);
         else {
             Cookie[] cookies = request.getCookies();
-            String token = Arrays.stream(cookies).filter(cookie -> cookie.getName().equals(jwtConfig.getAccessTokenHeader())).map(Cookie::getValue).findFirst().orElse("");
+            String token = cookieParser.parseAccessCookie(cookies);
             log.info("JWT token received {}", token);
             if (!Strings.isNullOrEmpty(token)) {
                 try {

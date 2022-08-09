@@ -6,6 +6,7 @@ import com.hyunho9877.chatter.domain.User;
 import com.hyunho9877.chatter.dto.RoleToUser;
 import com.hyunho9877.chatter.dto.UserDto;
 import com.hyunho9877.chatter.service.interfaces.AuthService;
+import com.hyunho9877.chatter.utils.cookie.CookieParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.net.HttpHeaders.AUTHORIZATION;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 
 @RestController
@@ -33,6 +33,7 @@ import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 public class RestAuthController {
 
     private final AuthService authService;
+    private final CookieParser cookieParser;
 
     @PostMapping("/registration.do")
     public ResponseEntity<String> registration(@Valid UserDto userDto) {
@@ -61,7 +62,7 @@ public class RestAuthController {
 
     @GetMapping("/token/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String token = request.getHeader(AUTHORIZATION);
+        String token = cookieParser.parseRefreshCookie(request.getCookies());
         if(!Strings.isNullOrEmpty(token)){
             Map<String, String> tokens = authService.refresh(token, request.getRequestURL().toString());
             new ObjectMapper().writeValue(response.getOutputStream(), tokens);
