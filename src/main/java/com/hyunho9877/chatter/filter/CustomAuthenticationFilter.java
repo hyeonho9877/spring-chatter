@@ -72,6 +72,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         refreshCookie.setHttpOnly(true);
         refreshCookie.setMaxAge(30 * 60 * 1000);
 
+        log.info("cookie domain {}", request.getServerName());
         response.addCookie(accessCookie);
         response.addCookie(refreshCookie);
     }

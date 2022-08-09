@@ -2,6 +2,8 @@ package com.hyunho9877.chatter.config;
 
 import com.hyunho9877.chatter.filter.CustomAuthenticationFilter;
 import com.hyunho9877.chatter.filter.CustomAuthorizationFilter;
+import com.hyunho9877.chatter.filter.FilterChainValidator;
+import com.hyunho9877.chatter.filter.URLFilterChainValidator;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -43,7 +45,7 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers("/v1/auth/all-users").hasAnyAuthority(ADMIN.name(), MANAGER.name()).and()
                 .addFilter(authenticationFilter)
-                .addFilterBefore(new CustomAuthorizationFilter(secretKey(), config), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new CustomAuthorizationFilter(secretKey(), config, filterChainValidator()), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/auth/**").permitAll()
                 .antMatchers("/v1/auth/do", "/v1/auth/token/refresh").permitAll()
@@ -60,5 +62,10 @@ public class SecurityConfig {
     @Bean
     public SecretKey secretKey() {
         return Keys.hmacShaKeyFor(config.getSecretKey().getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Bean
+    public FilterChainValidator filterChainValidator() {
+        return new URLFilterChainValidator();
     }
 }

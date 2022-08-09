@@ -18,12 +18,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import javax.crypto.SecretKey;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.google.common.net.HttpHeaders.AUTHORIZATION;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
@@ -34,12 +33,16 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     private final SecretKey secretKey;
     private final JwtConfig jwtConfig;
+    private final FilterChainValidator filterChainValidator;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (request.getServletPath().equals("/v1/auth/do") || request.getServletPath().equals("/v1/auth/token/refresh")) filterChain.doFilter(request, response);
+        log.info(request.getServletPath());
+        if (filterChainValidator.validate(request.getServletPath())) filterChain.doFilter(request, response);
         else {
-            String token = request.getHeader(AUTHORIZATION);
+            Cookie[] cookies = request.getCookies();
+            String token = Arrays.stream(cookies).filter(cookie -> cookie.getName().equals(jwtConfig.getAccessTokenHeader())).map(Cookie::getValue).findFirst().orElse("");
+            log.info("JWT token received {}", token);
             if(!Strings.isNullOrEmpty(token)){
                 try {
                     JwtParser parser = Jwts.parserBuilder()
