@@ -20,7 +20,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 
-import static com.hyunho9877.chatter.domain.Role.*;
+import static com.hyunho9877.chatter.domain.Role.ADMIN;
+import static com.hyunho9877.chatter.domain.Role.MANAGER;
 
 @EnableWebSecurity
 @RequiredArgsConstructor

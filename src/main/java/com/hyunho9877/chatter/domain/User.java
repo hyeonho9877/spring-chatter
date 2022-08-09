@@ -1,9 +1,12 @@
 package com.hyunho9877.chatter.domain;
+
 import com.hyunho9877.chatter.utils.converter.GenderConverter;
 import com.hyunho9877.chatter.utils.converter.RoleConverter;
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @Entity
 @Getter

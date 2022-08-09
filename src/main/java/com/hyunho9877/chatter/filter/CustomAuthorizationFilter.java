@@ -22,9 +22,11 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-import static com.google.common.net.HttpHeaders.AUTHORIZATION;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 
 @RequiredArgsConstructor
@@ -43,7 +45,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             Cookie[] cookies = request.getCookies();
             String token = Arrays.stream(cookies).filter(cookie -> cookie.getName().equals(jwtConfig.getAccessTokenHeader())).map(Cookie::getValue).findFirst().orElse("");
             log.info("JWT token received {}", token);
-            if(!Strings.isNullOrEmpty(token)){
+            if (!Strings.isNullOrEmpty(token)) {
                 try {
                     JwtParser parser = Jwts.parserBuilder()
                             .setSigningKey(secretKey)
@@ -51,7 +53,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     Jws<Claims> jws = parser.parseClaimsJws(token);
                     String username = jws.getBody().getSubject();
                     List<LinkedHashMap<String, ?>> roles = (List<LinkedHashMap<String, ?>>) jws.getBody().get(jwtConfig.getRoleHeader());
-                    List<SimpleGrantedAuthority> authorities = roles.stream().map(role -> role.get("authority")).map(role->new SimpleGrantedAuthority(role.toString())).toList();
+                    List<SimpleGrantedAuthority> authorities = roles.stream().map(role -> role.get("authority")).map(role -> new SimpleGrantedAuthority(role.toString())).toList();
                     log.info("authorities : {}", authorities);
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
