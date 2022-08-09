@@ -1,4 +1,4 @@
-package com.hyunho9877.chatter.controller;
+package com.hyunho9877.chatter.controller.rest;
 
 import com.hyunho9877.chatter.domain.ChatRoom;
 import com.hyunho9877.chatter.service.ChatService;

@@ -23,8 +23,6 @@ public class AuthController {
 
     @GetMapping("/sign.in")
     public String showSignInForm(Model model) {
-        UserDto userDto = new UserDto();
-        model.addAttribute("user", userDto);
         return "sign-in";
     }
 }
