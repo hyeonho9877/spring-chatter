@@ -6,8 +6,10 @@ import com.hyunho9877.chatter.domain.User;
 import com.hyunho9877.chatter.dto.UserDto;
 import com.hyunho9877.chatter.repo.UserRepository;
 import com.hyunho9877.chatter.service.interfaces.AuthService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
+import com.hyunho9877.chatter.utils.jwt.SimpleJwtGenerator;
+import com.hyunho9877.chatter.utils.jwt.SimpleApplicationJwtParser;
+import com.hyunho9877.chatter.utils.jwt.interfaces.ApplicationJwtGenerator;
+import com.hyunho9877.chatter.utils.jwt.interfaces.ApplicationJwtParser;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +29,13 @@ import java.util.*;
 @Slf4j
 @Transactional
 public class AuthServiceImpl implements AuthService {
+
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
-    private final SecretKey secretKey;
+    private final ApplicationJwtParser parser;
     private final JwtConfig jwtConfig;
+    private final ApplicationJwtParser jwtParser;
+    private final ApplicationJwtGenerator jwtGenerator;
 
     public Optional<User> registerNewUserAccount(User user) {
         if (isDuplicated(user.getEmail())) return Optional.empty();
@@ -72,6 +77,15 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public String remove(String email, String accessToken) throws IllegalStateException{
+        String subject = jwtParser.getSubject(accessToken);
+        if(email.equals(subject)) {
+            userRepository.deleteById(email);
+            return email;
+        } else throw new IllegalStateException("JWT Subject is not same as withdrawal requester!!!");
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findById(email).orElseThrow(() -> {
             log.error("There is no user with " + email);
@@ -86,29 +100,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Map<String, String> refresh(String refreshToken, String issuer) {
         try {
-            JwtParser parser = Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build();
-            Jws<Claims> jws = parser.parseClaimsJws(refreshToken);
-            String username = jws.getBody().getSubject();
+            String username = parser.getSubject(refreshToken);
             User user = getUser(username).orElseThrow();
-            String accessToken = Jwts.builder()
-                    .setSubject(user.getEmail())
-                    .setExpiration(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
-                    .setIssuer(issuer)
-                    .claim(jwtConfig.getRoleHeader(), user.getRole())
-                    .signWith(secretKey)
-                    .compact();
-
-            refreshToken = Jwts.builder()
-                    .setSubject(user.getEmail())
-                    .setExpiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
-                    .setIssuer(issuer)
-                    .signWith(secretKey)
-                    .compact();
-
+            String accessToken = jwtGenerator.generateAccessToken(username, issuer, user.getRole());
             return Map.of(jwtConfig.getAccessTokenHeader(), accessToken, jwtConfig.getRefreshTokenHeader(), refreshToken);
-
         } catch (Exception e) {
             return Collections.emptyMap();
         }
