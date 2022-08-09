@@ -4,6 +4,9 @@ import com.hyunho9877.chatter.filter.CustomAuthenticationFilter;
 import com.hyunho9877.chatter.filter.CustomAuthorizationFilter;
 import com.hyunho9877.chatter.filter.FilterChainValidator;
 import com.hyunho9877.chatter.filter.URLFilterChainValidator;
+import com.hyunho9877.chatter.utils.cookie.CookieParser;
+import com.hyunho9877.chatter.utils.jwt.SimpleJwtGenerator;
+import com.hyunho9877.chatter.utils.jwt.interfaces.ApplicationJwtGenerator;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +31,8 @@ import static com.hyunho9877.chatter.domain.Role.MANAGER;
 public class SecurityConfig {
     private final JwtConfig config;
     private final AuthenticationConfiguration configuration;
+    private final FilterChainValidator filterChainValidator;
+    private final CookieParser cookieParser;
 
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
@@ -36,7 +41,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(config, secretKey(), authenticationManager());
+        CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(config, secretKey(), authenticationManager(), jwtGenerator());
         authenticationFilter.setFilterProcessesUrl("/v1/auth/do");
         return http
                 .httpBasic().disable()
@@ -46,7 +51,7 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers("/v1/auth/all-users").hasAnyAuthority(ADMIN.name(), MANAGER.name()).and()
                 .addFilter(authenticationFilter)
-                .addFilterBefore(new CustomAuthorizationFilter(secretKey(), config, filterChainValidator()), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new CustomAuthorizationFilter(secretKey(), config, filterChainValidator, cookieParser), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/auth/**").permitAll()
                 .antMatchers("/v1/auth/do", "/v1/auth/token/refresh").permitAll()
@@ -66,7 +71,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public FilterChainValidator filterChainValidator() {
-        return new URLFilterChainValidator();
+    public ApplicationJwtGenerator jwtGenerator() {
+        return new SimpleJwtGenerator(config, secretKey());
     }
 }

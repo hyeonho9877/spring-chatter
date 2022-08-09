@@ -1,8 +1,11 @@
 package com.hyunho9877.chatter.filter;
 
+import org.springframework.stereotype.Component;
+
 import java.util.HashSet;
 import java.util.Set;
 
+@Component
 public class URLFilterChainValidator implements FilterChainValidator{
 
     private final Set<String> noAuthorizationNeededURL;

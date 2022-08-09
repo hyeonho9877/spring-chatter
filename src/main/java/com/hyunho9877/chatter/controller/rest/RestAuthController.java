@@ -10,10 +10,7 @@ import com.hyunho9877.chatter.utils.cookie.CookieParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -63,7 +60,7 @@ public class RestAuthController {
     @GetMapping("/token/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String token = cookieParser.parseRefreshCookie(request.getCookies());
-        if(!Strings.isNullOrEmpty(token)){
+        if (!Strings.isNullOrEmpty(token)) {
             Map<String, String> tokens = authService.refresh(token, request.getRequestURL().toString());
             new ObjectMapper().writeValue(response.getOutputStream(), tokens);
         } else {
@@ -75,5 +72,14 @@ public class RestAuthController {
     @GetMapping("/all-users")
     public ResponseEntity<List<User>> allUsers() {
         return ResponseEntity.ok(authService.getAllUsers());
+    }
+
+    @PostMapping("/withdrawal")
+    public ResponseEntity<String> withdrawal(HttpServletRequest request, String username) {
+        log.info("email received {}", username);
+        String accessToken = cookieParser.parseAccessCookie(request.getCookies());
+
+        String removed = authService.remove(username, accessToken);
+        return ResponseEntity.ok(removed);
     }
 }

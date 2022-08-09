@@ -15,4 +15,5 @@ public interface UserService extends UserDetailsService {
     Optional<User> getUser(String email);
     List<User> getAllUsers();
     User buildUser(UserDto userDto);
+    String remove(String email, String subject) throws IllegalStateException;
 }
