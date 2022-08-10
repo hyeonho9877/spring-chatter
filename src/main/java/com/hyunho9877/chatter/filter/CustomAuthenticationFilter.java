@@ -2,7 +2,6 @@ package com.hyunho9877.chatter.filter;
 
 import com.hyunho9877.chatter.config.JwtConfig;
 import com.hyunho9877.chatter.utils.jwt.interfaces.ApplicationJwtGenerator;
-import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,14 +18,12 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
 
 @Slf4j
 @RequiredArgsConstructor
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final JwtConfig jwtConfig;
-    private final SecretKey secretKey;
     private final AuthenticationManager authenticationManager;
     private final ApplicationJwtGenerator jwtGenerator;
 
@@ -49,10 +46,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 //        response.setHeader(config.getRefreshTokenHeader(), refreshToken);
         Cookie accessCookie = new Cookie(jwtConfig.getAccessTokenHeader(), accessToken);
         accessCookie.setHttpOnly(true);
+        accessCookie.setPath("/v1");
         accessCookie.setMaxAge(jwtGenerator.getAccessTokenExpiration());
 
         Cookie refreshCookie = new Cookie(jwtConfig.getRefreshTokenHeader(), refreshToken);
         refreshCookie.setHttpOnly(true);
+        refreshCookie.setPath("/v1");
         refreshCookie.setMaxAge(jwtGenerator.getRefreshTokenExpiration());
 
         log.info("cookie domain {}", request.getServerName());

@@ -1,0 +1,50 @@
+package com.hyunho9877.chatter.controller.rest;
+
+import com.hyunho9877.chatter.domain.ApplicationUser;
+import com.hyunho9877.chatter.domain.Friends;
+import com.hyunho9877.chatter.service.interfaces.SocialService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
+import java.util.Set;
+
+@RestController
+@RequiredArgsConstructor
+@Slf4j
+@RequestMapping("/v1/social")
+public class RestSocialController {
+
+    private final SocialService socialService;
+
+    @PostMapping("/user")
+    public ResponseEntity<ApplicationUser> getUser(Authentication authentication, String username) {
+        return ResponseEntity.ok(socialService.getUser(username));
+    }
+
+    @PostMapping("/users")
+    public ResponseEntity<Set<Friends>> getFriends(Authentication authentication) {
+        String username = (String) authentication.getPrincipal();
+        return ResponseEntity.ok(socialService.getFriends(username));
+    }
+
+    @PostMapping("/follow")
+    public ResponseEntity<String> follow(Authentication authentication, String userID) {
+        String username = (String) authentication.getPrincipal();
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/v1/social/follow").toUriString());
+        return ResponseEntity.created(uri).body(socialService.registerNewFriend(username, userID));
+    }
+
+    @PostMapping("/unfollow")
+    public ResponseEntity<String> unfollow(Authentication authentication, String userID) {
+        String username = (String) authentication.getPrincipal();
+        return ResponseEntity.ok(socialService.removeFriend(username, userID));
+    }
+}

@@ -3,7 +3,6 @@ package com.hyunho9877.chatter.config;
 import com.hyunho9877.chatter.filter.CustomAuthenticationFilter;
 import com.hyunho9877.chatter.filter.CustomAuthorizationFilter;
 import com.hyunho9877.chatter.filter.FilterChainValidator;
-import com.hyunho9877.chatter.filter.URLFilterChainValidator;
 import com.hyunho9877.chatter.utils.cookie.CookieParser;
 import com.hyunho9877.chatter.utils.jwt.SimpleJwtGenerator;
 import com.hyunho9877.chatter.utils.jwt.interfaces.ApplicationJwtGenerator;
@@ -41,7 +40,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(config, secretKey(), authenticationManager(), jwtGenerator());
+        CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(config, authenticationManager(), jwtGenerator());
         authenticationFilter.setFilterProcessesUrl("/v1/auth/do");
         return http
                 .httpBasic().disable()

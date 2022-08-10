@@ -2,6 +2,7 @@ package com.hyunho9877.chatter.utils.cookie;
 
 import com.hyunho9877.chatter.config.JwtConfig;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.Cookie;
@@ -9,12 +10,14 @@ import java.util.Arrays;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class CookieParserImpl implements CookieParser{
 
     private final JwtConfig jwtConfig;
 
     @Override
     public String parseAccessCookie(Cookie[] cookies) {
+        log.info("cookies {}" ,Arrays.toString(cookies));
         if(cookies == null) return "";
         return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(jwtConfig.getAccessTokenHeader()))
