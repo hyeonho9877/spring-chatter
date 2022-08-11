@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,16 +33,18 @@ public class SocialServiceImpl implements SocialService {
     }
 
     @Override
-    public String registerNewFriend(String email, String friendEmail) throws EntityNotFoundException {
-        ApplicationUser applicationUser = userRepository.findById(email).orElseThrow();
-        ApplicationUser friend = userRepository.getReferenceById(friendEmail);
-        friendsRepository.saveAndFlush(Friends.of(applicationUser, friend));
-        return friendEmail;
+    public String registerNewFriend(String email, String following) throws EntityNotFoundException {
+        ApplicationUser user = userRepository.findById(email).orElseThrow();
+        ApplicationUser friend = userRepository.getReferenceById(following);
+        friendsRepository.saveAndFlush(Friends.of(user, friend));
+        friendsRepository.saveAndFlush(Friends.of(friend, user));
+        return following;
     }
 
     @Override
-    public Set<Friends> getFriends(String email) {
-        return friendsRepository.findByUser1(userRepository.getReferenceById(email));
+    public Set<ApplicationUser> getFriends(String email) {
+        Set<Friends> result = friendsRepository.findByUser1(userRepository.getReferenceById(email));
+        return result.stream().map(Friends::getUser2).map(ApplicationUser::getPublicProfile).collect(Collectors.toSet());
     }
 
     @Override

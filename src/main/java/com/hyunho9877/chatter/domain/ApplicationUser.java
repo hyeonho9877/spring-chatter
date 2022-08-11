@@ -25,4 +25,8 @@ public class ApplicationUser {
     private Gender gender;
     @Convert(converter = RoleConverter.class)
     private Role role;
+
+    public static ApplicationUser getPublicProfile(ApplicationUser user) {
+        return new ApplicationUser(user.getEmail(), null, user.getName(), user.getAge(), user.getGender(), null);
+    }
 }

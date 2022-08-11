@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,17 +28,17 @@ public class RestSocialController {
         return ResponseEntity.ok(socialService.getUser(username));
     }
 
-    @PostMapping("/users")
-    public ResponseEntity<Set<Friends>> getFriends(Authentication authentication) {
+    @PostMapping("/following")
+    public ResponseEntity<Set<ApplicationUser>> getFriends(Authentication authentication) {
         String username = (String) authentication.getPrincipal();
         return ResponseEntity.ok(socialService.getFriends(username));
     }
 
     @PostMapping("/follow")
-    public ResponseEntity<String> follow(Authentication authentication, String userID) {
+    public ResponseEntity<String> follow(Authentication authentication, String following) {
         String username = (String) authentication.getPrincipal();
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/v1/social/follow").toUriString());
-        return ResponseEntity.created(uri).body(socialService.registerNewFriend(username, userID));
+        return ResponseEntity.created(uri).body(socialService.registerNewFriend(username, following));
     }
 
     @PostMapping("/unfollow")

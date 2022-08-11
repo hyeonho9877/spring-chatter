@@ -7,7 +7,7 @@ import java.util.Set;
 
 public interface SocialService {
     ApplicationUser getUser(String email);
-    String registerNewFriend(String email, String friendEmail);
-    Set<Friends> getFriends(String email);
+    String registerNewFriend(String email, String following);
+    Set<ApplicationUser> getFriends(String email);
     String removeFriend(String email, String friendEmail);
 }

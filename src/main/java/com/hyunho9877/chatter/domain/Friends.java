@@ -1,5 +1,6 @@
 package com.hyunho9877.chatter.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
 public class Friends {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
