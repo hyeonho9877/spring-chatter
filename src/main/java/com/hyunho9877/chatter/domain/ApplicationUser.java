@@ -3,19 +3,19 @@ package com.hyunho9877.chatter.domain;
 import com.hyunho9877.chatter.utils.converter.GenderConverter;
 import com.hyunho9877.chatter.utils.converter.RoleConverter;
 import lombok.*;
+import org.springframework.data.repository.cdi.Eager;
 
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
-@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class ApplicationUser {
     @Id
     private String email;
     private String password;
@@ -25,4 +25,8 @@ public class User {
     private Gender gender;
     @Convert(converter = RoleConverter.class)
     private Role role;
+
+    public static ApplicationUser getPublicProfile(ApplicationUser user) {
+        return new ApplicationUser(user.getEmail(), null, user.getName(), user.getAge(), user.getGender(), null);
+    }
 }

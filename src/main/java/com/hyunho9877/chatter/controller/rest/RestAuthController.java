@@ -2,7 +2,7 @@ package com.hyunho9877.chatter.controller.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import com.hyunho9877.chatter.domain.User;
+import com.hyunho9877.chatter.domain.ApplicationUser;
 import com.hyunho9877.chatter.dto.RoleToUser;
 import com.hyunho9877.chatter.dto.UserDto;
 import com.hyunho9877.chatter.service.interfaces.AuthService;
@@ -10,7 +10,10 @@ import com.hyunho9877.chatter.utils.cookie.CookieParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -70,7 +73,7 @@ public class RestAuthController {
     }
 
     @GetMapping("/all-users")
-    public ResponseEntity<List<User>> allUsers() {
+    public ResponseEntity<List<ApplicationUser>> allUsers() {
         return ResponseEntity.ok(authService.getAllUsers());
     }
 

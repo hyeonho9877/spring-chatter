@@ -61,6 +61,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     filterChain.doFilter(request, response);
                 } catch (Exception e) {
                     log.error("jwt authorization failed with {}", token);
+                    e.printStackTrace();
                     response.setStatus(SC_FORBIDDEN);
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                     Map<String, String> error_message = Map.of("error_message", e.getMessage());

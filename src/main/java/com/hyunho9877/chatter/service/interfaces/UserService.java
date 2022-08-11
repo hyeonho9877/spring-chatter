@@ -1,7 +1,7 @@
 package com.hyunho9877.chatter.service.interfaces;
 
+import com.hyunho9877.chatter.domain.ApplicationUser;
 import com.hyunho9877.chatter.domain.Role;
-import com.hyunho9877.chatter.domain.User;
 import com.hyunho9877.chatter.dto.UserDto;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserService extends UserDetailsService {
-    Optional<User> registerNewUserAccount(User user);
+    Optional<ApplicationUser> registerNewUserAccount(ApplicationUser applicationUser);
     boolean isDuplicated(String email);
     void addRoleToUser(String email, Role role);
-    Optional<User> getUser(String email);
-    List<User> getAllUsers();
-    User buildUser(UserDto userDto);
+    Optional<ApplicationUser> getUser(String email);
+    List<ApplicationUser> getAllUsers();
+    ApplicationUser buildUser(UserDto userDto);
     String remove(String email, String subject) throws IllegalStateException;
 }

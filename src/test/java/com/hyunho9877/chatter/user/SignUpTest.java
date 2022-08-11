@@ -1,7 +1,7 @@
 package com.hyunho9877.chatter.user;
 
+import com.hyunho9877.chatter.domain.ApplicationUser;
 import com.hyunho9877.chatter.domain.Gender;
-import com.hyunho9877.chatter.domain.User;
 import com.hyunho9877.chatter.dto.UserDto;
 import com.hyunho9877.chatter.service.interfaces.UserService;
 import org.junit.jupiter.api.DisplayName;
@@ -34,11 +34,11 @@ public class SignUpTest {
         userDto.setAge(15);
         userDto.setGender(Gender.MALE);
 
-        User user = userService.registerNewUserAccount(userService.buildUser(userDto)).orElseThrow();
-        assertThat(user.getName()).isEqualTo(userDto.getFirstName() + userDto.getLastName());
-        assertThat(user.getEmail()).isEqualTo(userDto.getEmail());
-        assertThat(user.getAge()).isSameAs(userDto.getAge());
-        assertThat(user.getGender()).isSameAs(userDto.getGender());
+        ApplicationUser applicationUser = userService.registerNewUserAccount(userService.buildUser(userDto)).orElseThrow();
+        assertThat(applicationUser.getName()).isEqualTo(userDto.getFirstName() + userDto.getLastName());
+        assertThat(applicationUser.getEmail()).isEqualTo(userDto.getEmail());
+        assertThat(applicationUser.getAge()).isSameAs(userDto.getAge());
+        assertThat(applicationUser.getGender()).isSameAs(userDto.getGender());
     }
 
     @Test

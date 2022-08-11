@@ -3,11 +3,9 @@ package com.hyunho9877.chatter.utils.jwt;
 import com.hyunho9877.chatter.config.JwtConfig;
 import com.hyunho9877.chatter.domain.Role;
 import com.hyunho9877.chatter.utils.jwt.interfaces.ApplicationJwtGenerator;
-import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Collection;
