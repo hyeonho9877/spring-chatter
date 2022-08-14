@@ -47,12 +47,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         Cookie accessCookie = new Cookie(jwtConfig.getAccessTokenHeader(), accessToken);
         accessCookie.setHttpOnly(true);
         accessCookie.setPath("/v1");
-        accessCookie.setMaxAge(jwtGenerator.getAccessTokenExpiration());
+        accessCookie.setMaxAge(jwtGenerator.getAccessTokenExpiration() / 1000);
 
         Cookie refreshCookie = new Cookie(jwtConfig.getRefreshTokenHeader(), refreshToken);
         refreshCookie.setHttpOnly(true);
         refreshCookie.setPath("/v1");
-        refreshCookie.setMaxAge(jwtGenerator.getRefreshTokenExpiration());
+        refreshCookie.setMaxAge(jwtGenerator.getRefreshTokenExpiration() / 1000);
 
         log.info("cookie domain {}", request.getServerName());
         response.addCookie(accessCookie);

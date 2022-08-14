@@ -1,5 +1,7 @@
 package com.hyunho9877.chatter.config;
 
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
 import com.hyunho9877.chatter.filter.CustomAuthenticationFilter;
 import com.hyunho9877.chatter.filter.CustomAuthorizationFilter;
 import com.hyunho9877.chatter.filter.FilterChainValidator;
@@ -53,7 +55,7 @@ public class SecurityConfig {
                 .addFilterBefore(new CustomAuthorizationFilter(secretKey(), config, filterChainValidator, cookieParser), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/auth/**").permitAll()
-                .antMatchers("/v1/auth/do", "/v1/auth/token/refresh").permitAll()
+                .antMatchers("/v1/auth/do", "/v1/auth/token/refresh", "/v1/auth/registration.do").permitAll()
                 .antMatchers("/v1/**").authenticated()
                 .anyRequest().authenticated().and()
                 .build();
@@ -72,5 +74,10 @@ public class SecurityConfig {
     @Bean
     public ApplicationJwtGenerator jwtGenerator() {
         return new SimpleJwtGenerator(config, secretKey());
+    }
+
+    @Bean
+    public HashFunction hashFunction() {
+        return Hashing.sha256();
     }
 }

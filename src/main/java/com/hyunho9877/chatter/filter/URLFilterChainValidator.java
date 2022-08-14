@@ -12,6 +12,8 @@ public class URLFilterChainValidator implements FilterChainValidator{
 
     public URLFilterChainValidator() {
         this.noAuthorizationNeededURL = new HashSet<>();
+        noAuthorizationNeededURL.add("/v1/auth/registration.do");
+        noAuthorizationNeededURL.add("/auth/registration.form");
         noAuthorizationNeededURL.add("/v1/auth/do");
         noAuthorizationNeededURL.add("/v1/auth/token/refresh");
         noAuthorizationNeededURL.add("/auth/sign.in");

@@ -12,12 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
-    private final UserService userService;
 
     @GetMapping("/registration.form")
     public String showRegistrationForm(Model model) {
         UserDto userDto = new UserDto();
-        model.addAttribute("user", userDto);
+        model.addAttribute("applicationUser", userDto);
         return "registration";
     }
 
