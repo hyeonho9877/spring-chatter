@@ -1,13 +1,14 @@
-package com.hyunho9877.chatter.service;
+package com.hyunho9877.chatter.service.auth.implementation;
 
 import com.hyunho9877.chatter.config.JwtConfig;
 import com.hyunho9877.chatter.domain.ApplicationUser;
 import com.hyunho9877.chatter.domain.Role;
 import com.hyunho9877.chatter.dto.UserDto;
 import com.hyunho9877.chatter.repo.UserRepository;
-import com.hyunho9877.chatter.service.interfaces.AuthService;
-import com.hyunho9877.chatter.utils.jwt.interfaces.ApplicationJwtGenerator;
-import com.hyunho9877.chatter.utils.jwt.interfaces.ApplicationJwtParser;
+import com.hyunho9877.chatter.service.auth.AuthService;
+import com.hyunho9877.chatter.utils.jwt.ApplicationJwtGenerator;
+import com.hyunho9877.chatter.utils.jwt.ApplicationJwtParser;
+import com.hyunho9877.chatter.utils.rabbitmq.RabbitMQUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,11 +32,14 @@ public class AuthServiceImpl implements AuthService {
     private final JwtConfig jwtConfig;
     private final ApplicationJwtParser jwtParser;
     private final ApplicationJwtGenerator jwtGenerator;
+    private final RabbitMQUtils rabbitMQUtils;
+
 
     public Optional<ApplicationUser> registerNewUserAccount(ApplicationUser applicationUser) {
         if (isDuplicated(applicationUser.getEmail())) return Optional.empty();
         log.info("Saving new user {} to the database", applicationUser.getEmail());
         applicationUser.setPassword(encoder.encode(applicationUser.getPassword()));
+        rabbitMQUtils.declareQueue(applicationUser.getEmail(), true);
         return Optional.of(userRepository.save(applicationUser));
     }
 
@@ -63,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
     public ApplicationUser buildUser(UserDto userDto) {
         return ApplicationUser.builder()
                 .email(userDto.getEmail())
-                .password(encoder.encode(userDto.getPassword()))
+                .password(userDto.getPassword())
                 .name(userDto.getFirstName() + userDto.getLastName())
                 .age(userDto.getAge())
                 .gender(userDto.getGender())
@@ -86,6 +90,7 @@ public class AuthServiceImpl implements AuthService {
             log.error("There is no user with " + email);
             throw new UsernameNotFoundException("There is no user with " + email);
         });
+        System.out.println(applicationUser);
         return new org.springframework.security.core.userdetails.User(
                 applicationUser.getEmail(),
                 applicationUser.getPassword(),

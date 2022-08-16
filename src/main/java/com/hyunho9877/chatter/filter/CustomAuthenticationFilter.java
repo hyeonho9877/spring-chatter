@@ -1,7 +1,7 @@
 package com.hyunho9877.chatter.filter;
 
 import com.hyunho9877.chatter.config.JwtConfig;
-import com.hyunho9877.chatter.utils.jwt.interfaces.ApplicationJwtGenerator;
+import com.hyunho9877.chatter.utils.jwt.ApplicationJwtGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,7 +11,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.crypto.SecretKey;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -46,16 +45,22 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 //        response.setHeader(config.getRefreshTokenHeader(), refreshToken);
         Cookie accessCookie = new Cookie(jwtConfig.getAccessTokenHeader(), accessToken);
         accessCookie.setHttpOnly(true);
-        accessCookie.setPath("/v1");
-        accessCookie.setMaxAge(jwtGenerator.getAccessTokenExpiration());
+        accessCookie.setPath("/");
+        accessCookie.setMaxAge(jwtGenerator.getAccessTokenExpiration() / 1000);
 
         Cookie refreshCookie = new Cookie(jwtConfig.getRefreshTokenHeader(), refreshToken);
         refreshCookie.setHttpOnly(true);
-        refreshCookie.setPath("/v1");
-        refreshCookie.setMaxAge(jwtGenerator.getRefreshTokenExpiration());
+        refreshCookie.setPath("/");
+        refreshCookie.setMaxAge(jwtGenerator.getRefreshTokenExpiration() / 1000);
 
         log.info("cookie domain {}", request.getServerName());
         response.addCookie(accessCookie);
         response.addCookie(refreshCookie);
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        log.error(failed.getMessage());
+        failed.printStackTrace();
     }
 }

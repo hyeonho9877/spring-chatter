@@ -1,8 +1,7 @@
 package com.hyunho9877.chatter.controller.rest;
 
 import com.hyunho9877.chatter.domain.ApplicationUser;
-import com.hyunho9877.chatter.domain.Friends;
-import com.hyunho9877.chatter.service.interfaces.SocialService;
+import com.hyunho9877.chatter.service.social.SocialService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

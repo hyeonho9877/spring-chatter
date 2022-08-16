@@ -1,6 +1,6 @@
-package com.hyunho9877.chatter.utils.jwt;
+package com.hyunho9877.chatter.utils.jwt.implementation;
 
-import com.hyunho9877.chatter.utils.jwt.interfaces.ApplicationJwtParser;
+import com.hyunho9877.chatter.utils.jwt.ApplicationJwtParser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtParser;

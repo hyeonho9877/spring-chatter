@@ -1,8 +1,8 @@
-package com.hyunho9877.chatter.utils.jwt;
+package com.hyunho9877.chatter.utils.jwt.implementation;
 
 import com.hyunho9877.chatter.config.JwtConfig;
 import com.hyunho9877.chatter.domain.Role;
-import com.hyunho9877.chatter.utils.jwt.interfaces.ApplicationJwtGenerator;
+import com.hyunho9877.chatter.utils.jwt.ApplicationJwtGenerator;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

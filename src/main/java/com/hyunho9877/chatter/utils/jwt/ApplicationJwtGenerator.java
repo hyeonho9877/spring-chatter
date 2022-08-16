@@ -1,4 +1,4 @@
-package com.hyunho9877.chatter.utils.jwt.interfaces;
+package com.hyunho9877.chatter.utils.jwt;
 
 import com.hyunho9877.chatter.domain.Role;
 import org.springframework.security.core.GrantedAuthority;

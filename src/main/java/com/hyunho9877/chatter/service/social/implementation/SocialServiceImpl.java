@@ -1,10 +1,10 @@
-package com.hyunho9877.chatter.service;
+package com.hyunho9877.chatter.service.social.implementation;
 
 import com.hyunho9877.chatter.domain.ApplicationUser;
 import com.hyunho9877.chatter.domain.Friends;
 import com.hyunho9877.chatter.repo.FriendsRepository;
 import com.hyunho9877.chatter.repo.UserRepository;
-import com.hyunho9877.chatter.service.interfaces.SocialService;
+import com.hyunho9877.chatter.service.social.SocialService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

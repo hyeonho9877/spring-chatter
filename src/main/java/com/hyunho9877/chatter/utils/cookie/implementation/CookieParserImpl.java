@@ -1,6 +1,7 @@
-package com.hyunho9877.chatter.utils.cookie;
+package com.hyunho9877.chatter.utils.cookie.implementation;
 
 import com.hyunho9877.chatter.config.JwtConfig;
+import com.hyunho9877.chatter.utils.cookie.CookieParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,7 @@ import java.util.Arrays;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class CookieParserImpl implements CookieParser{
+public class CookieParserImpl implements CookieParser {
 
     private final JwtConfig jwtConfig;
 
