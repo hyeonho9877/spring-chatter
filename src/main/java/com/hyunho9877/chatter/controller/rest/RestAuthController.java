@@ -81,7 +81,6 @@ public class RestAuthController {
     public ResponseEntity<String> withdrawal(HttpServletRequest request, String username) {
         log.info("email received {}", username);
         String accessToken = cookieParser.parseAccessCookie(request.getCookies());
-
         String removed = authService.remove(username, accessToken);
         return ResponseEntity.ok(removed);
     }
