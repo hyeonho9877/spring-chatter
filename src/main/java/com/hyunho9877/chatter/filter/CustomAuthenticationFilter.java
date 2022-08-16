@@ -1,7 +1,7 @@
 package com.hyunho9877.chatter.filter;
 
 import com.hyunho9877.chatter.config.JwtConfig;
-import com.hyunho9877.chatter.utils.jwt.interfaces.ApplicationJwtGenerator;
+import com.hyunho9877.chatter.utils.jwt.ApplicationJwtGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,7 +11,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.crypto.SecretKey;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;

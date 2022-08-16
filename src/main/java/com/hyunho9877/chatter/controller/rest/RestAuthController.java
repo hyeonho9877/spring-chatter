@@ -5,7 +5,7 @@ import com.google.common.base.Strings;
 import com.hyunho9877.chatter.domain.ApplicationUser;
 import com.hyunho9877.chatter.dto.RoleToUser;
 import com.hyunho9877.chatter.dto.UserDto;
-import com.hyunho9877.chatter.service.interfaces.AuthService;
+import com.hyunho9877.chatter.service.auth.AuthService;
 import com.hyunho9877.chatter.utils.cookie.CookieParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

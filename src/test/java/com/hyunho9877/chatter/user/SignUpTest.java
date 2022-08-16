@@ -3,7 +3,7 @@ package com.hyunho9877.chatter.user;
 import com.hyunho9877.chatter.domain.ApplicationUser;
 import com.hyunho9877.chatter.domain.Gender;
 import com.hyunho9877.chatter.dto.UserDto;
-import com.hyunho9877.chatter.service.interfaces.UserService;
+import com.hyunho9877.chatter.service.auth.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

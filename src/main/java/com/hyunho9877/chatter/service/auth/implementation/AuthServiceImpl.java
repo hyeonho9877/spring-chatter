@@ -1,22 +1,16 @@
-package com.hyunho9877.chatter.service;
+package com.hyunho9877.chatter.service.auth.implementation;
 
-import com.google.common.hash.Hashing;
 import com.hyunho9877.chatter.config.JwtConfig;
 import com.hyunho9877.chatter.domain.ApplicationUser;
-import com.hyunho9877.chatter.domain.Exchange;
 import com.hyunho9877.chatter.domain.Role;
 import com.hyunho9877.chatter.dto.UserDto;
 import com.hyunho9877.chatter.repo.UserRepository;
-import com.hyunho9877.chatter.service.interfaces.AuthService;
-import com.hyunho9877.chatter.utils.jwt.interfaces.ApplicationJwtGenerator;
-import com.hyunho9877.chatter.utils.jwt.interfaces.ApplicationJwtParser;
+import com.hyunho9877.chatter.service.auth.AuthService;
+import com.hyunho9877.chatter.utils.jwt.ApplicationJwtGenerator;
+import com.hyunho9877.chatter.utils.jwt.ApplicationJwtParser;
 import com.hyunho9877.chatter.utils.rabbitmq.RabbitMQUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.AmqpAdmin;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Service

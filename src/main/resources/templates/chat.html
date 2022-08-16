@@ -10,14 +10,14 @@
     <script>
         $(function () {
             console.log('document ready')
-            let data = {"sender": "test4@gmail.com", "receiver": "test1@gmail.com", "message": "hello"}
+            let data = {"sender": "test4@gmail.com", "receiver": "test1@gmail.com", "message": "ohno"}
             let socket = new SockJS('/ws');
             let stomp = Stomp.over(socket);
             stomp.connect({}, frame => {
                 console.log('Connected : ' + frame)
                 console.log(frame.headers)
                 console.log(frame.headers['user-name'])
-                stomp.subscribe('/amq/queue/'+frame.headers['user-name'], response => {
+                stomp.subscribe('/queue/'+frame.headers['user-name'], response => {
                     console.log(response)
                     console.log(JSON.parse(response.body))
                 })
