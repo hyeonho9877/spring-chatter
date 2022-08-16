@@ -21,7 +21,7 @@ public class ChatterApplication {
         SpringApplication.run(ChatterApplication.class, args);
     }
 
-    @Bean
+    /*@Bean
     CommandLineRunner run(UserService userService) {
         return args -> {
             userService.registerNewUserAccount(new ApplicationUser("test1@gmail.com", "1234", "john", 24, MALE, USER));
@@ -29,6 +29,6 @@ public class ChatterApplication {
             userService.registerNewUserAccount(new ApplicationUser("test3@gmail.com", "1234", "catalina", 24, FEMALE, MANAGER));
             userService.registerNewUserAccount(new ApplicationUser("test4@gmail.com", "1234", "jim", 24, MALE, ADMIN));
         };
-    }
+    }*/
 }
 

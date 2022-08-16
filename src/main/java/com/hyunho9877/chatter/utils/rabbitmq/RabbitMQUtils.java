@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 
-
 @Component
 @RequiredArgsConstructor
 public class RabbitMQUtils {
@@ -17,15 +16,10 @@ public class RabbitMQUtils {
     private final AmqpAdmin amqpAdmin;
 
     public void declareQueue(String username, boolean durable) {
-        String hashed = hash(username);
-        Queue queue = new Queue(hashed, durable);
+        Queue queue = new Queue(username, durable);
         amqpAdmin.declareQueue(queue);
-        String routingKey = Exchange.EXCHANGE.getExchange() + "." + hashed;
+        String routingKey = Exchange.EXCHANGE.getExchange() + "." + username;
         amqpAdmin.declareBinding(binding(queue, topicExchange(), routingKey));
-    }
-
-    private String hash(String string) {
-        return hashFunction.hashString(string, StandardCharsets.UTF_8).toString();
     }
 
     private TopicExchange topicExchange() {

@@ -46,16 +46,22 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 //        response.setHeader(config.getRefreshTokenHeader(), refreshToken);
         Cookie accessCookie = new Cookie(jwtConfig.getAccessTokenHeader(), accessToken);
         accessCookie.setHttpOnly(true);
-        accessCookie.setPath("/v1");
+        accessCookie.setPath("/");
         accessCookie.setMaxAge(jwtGenerator.getAccessTokenExpiration() / 1000);
 
         Cookie refreshCookie = new Cookie(jwtConfig.getRefreshTokenHeader(), refreshToken);
         refreshCookie.setHttpOnly(true);
-        refreshCookie.setPath("/v1");
+        refreshCookie.setPath("/");
         refreshCookie.setMaxAge(jwtGenerator.getRefreshTokenExpiration() / 1000);
 
         log.info("cookie domain {}", request.getServerName());
         response.addCookie(accessCookie);
         response.addCookie(refreshCookie);
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        log.error(failed.getMessage());
+        failed.printStackTrace();
     }
 }

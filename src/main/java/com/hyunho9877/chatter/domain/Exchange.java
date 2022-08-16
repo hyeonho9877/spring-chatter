@@ -1,7 +1,7 @@
 package com.hyunho9877.chatter.domain;
 
 public enum Exchange {
-    EXCHANGE("sample.exchange");
+    EXCHANGE("amq.topic");
 
     private final String exchange;
 

@@ -15,6 +15,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class ApplicationUser {
     @Id
     private String email;
