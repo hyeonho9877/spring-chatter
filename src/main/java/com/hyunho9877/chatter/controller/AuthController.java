@@ -1,7 +1,6 @@
 package com.hyunho9877.chatter.controller;
 
 import com.hyunho9877.chatter.dto.UserDto;
-import com.hyunho9877.chatter.service.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

@@ -1,4 +1,4 @@
-package com.hyunho9877.chatter.service.interfaces;
+package com.hyunho9877.chatter.service.auth;
 
 import java.util.Map;
 

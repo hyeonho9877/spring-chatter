@@ -1,4 +1,4 @@
-package com.hyunho9877.chatter.service.interfaces;
+package com.hyunho9877.chatter.service.auth;
 
 import com.hyunho9877.chatter.domain.ApplicationUser;
 import com.hyunho9877.chatter.domain.Role;
