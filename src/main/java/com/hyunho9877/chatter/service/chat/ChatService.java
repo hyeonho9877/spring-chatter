@@ -6,4 +6,6 @@ import org.springframework.amqp.core.Message;
 public interface ChatService {
 
     void send(ChatMessage message);
+    void notifyOnline(String username);
+    void notifyOffline(String username);
 }

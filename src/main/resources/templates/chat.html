@@ -9,19 +9,14 @@
     <title>Title</title>
     <script>
         $(function () {
-            console.log('document ready')
             let data = {"sender": "test4@gmail.com", "receiver": "test1@gmail.com", "message": "ohno"}
             let socket = new SockJS('/ws');
             let stomp = Stomp.over(socket);
             stomp.connect({}, frame => {
-                console.log('Connected : ' + frame)
-                console.log(frame.headers)
-                console.log(frame.headers['user-name'])
-                stomp.subscribe('/queue/'+frame.headers['user-name'], response => {
-                    console.log(response)
-                    console.log(JSON.parse(response.body))
+                stomp.subscribe('/queue/' + frame.headers['user-name'], response => {
+                    console.log('subscribe : ' + JSON.parse(response.body))
                 })
-                stomp.send("/pub/hello", null, JSON.stringify(data));
+                //stomp.send("/pub/hello", null, JSON.stringify(data));
             })
         })
     </script>

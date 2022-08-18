@@ -40,12 +40,12 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info(request.getServletPath());
+//        log.info(request.getServletPath());
         if (filterChainValidator.validate(request.getServletPath())) filterChain.doFilter(request, response);
         else {
             Cookie[] cookies = request.getCookies();
             String token = cookieParser.parseAccessCookie(cookies);
-            log.info("JWT token received {}", token);
+//            log.info("JWT token received {}", token);
             if (!Strings.isNullOrEmpty(token)) {
                 try {
                     JwtParser parser = Jwts.parserBuilder()
@@ -55,12 +55,12 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     String username = jws.getBody().getSubject();
                     List<LinkedHashMap<String, ?>> roles = (List<LinkedHashMap<String, ?>>) jws.getBody().get(jwtConfig.getRoleHeader());
                     List<SimpleGrantedAuthority> authorities = roles.stream().map(role -> role.get("authority")).map(role -> new SimpleGrantedAuthority(role.toString())).toList();
-                    log.info("authorities : {}", authorities);
+//                    log.info("authorities : {}", authorities);
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     filterChain.doFilter(request, response);
                 } catch (Exception e) {
-                    log.error("jwt authorization failed with {}", token);
+//                    log.error("jwt authorization failed with {}", token);
                     e.printStackTrace();
                     response.setStatus(SC_FORBIDDEN);
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);

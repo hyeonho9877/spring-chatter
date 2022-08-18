@@ -18,7 +18,6 @@ public class CookieParserImpl implements CookieParser {
 
     @Override
     public String parseAccessCookie(Cookie[] cookies) {
-        log.info("cookies {}" ,Arrays.toString(cookies));
         if(cookies == null) return "";
         return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(jwtConfig.getAccessTokenHeader()))
