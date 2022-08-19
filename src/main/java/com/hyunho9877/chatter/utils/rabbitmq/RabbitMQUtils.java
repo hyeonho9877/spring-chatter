@@ -12,14 +12,12 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class RabbitMQUtils {
 
-    private final HashFunction hashFunction;
     private final AmqpAdmin amqpAdmin;
 
     public void declareQueue(String username, boolean durable) {
         Queue queue = new Queue(username, durable);
         amqpAdmin.declareQueue(queue);
-        String routingKey = Exchange.EXCHANGE.getExchange() + "." + username;
-        amqpAdmin.declareBinding(binding(queue, topicExchange(), routingKey));
+        amqpAdmin.declareBinding(binding(queue, topicExchange(), username));
     }
 
     private TopicExchange topicExchange() {

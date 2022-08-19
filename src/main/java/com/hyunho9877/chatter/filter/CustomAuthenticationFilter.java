@@ -1,5 +1,6 @@
 package com.hyunho9877.chatter.filter;
 
+import com.google.common.base.Strings;
 import com.hyunho9877.chatter.config.JwtConfig;
 import com.hyunho9877.chatter.utils.jwt.ApplicationJwtGenerator;
 import lombok.RequiredArgsConstructor;
@@ -54,13 +55,17 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         refreshCookie.setMaxAge(jwtGenerator.getRefreshTokenExpiration() / 1000);
 
         log.info("cookie domain {}", request.getServerName());
+
         response.addCookie(accessCookie);
         response.addCookie(refreshCookie);
+
+        String go = (String) request.getAttribute("go");
+        if (!Strings.isNullOrEmpty(go)) response.setHeader("Referer", go);
+        else response.setHeader("Referer", "/");
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        log.error(failed.getMessage());
-        failed.printStackTrace();
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 }
