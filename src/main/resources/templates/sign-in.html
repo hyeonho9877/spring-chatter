@@ -16,11 +16,8 @@
                     type: 'POST',
                     url: '/v1/auth/do',
                     data: data,
-                    success: (data) => {
-                        console.log(data['accessToken'])
-                    },
-                    error: (err) => {
-                        console.log(err);
+                    success: (data, text, request) => {
+                        location.href = request.getResponseHeader('Referer')
                     }
                 })
                 e.preventDefault()
