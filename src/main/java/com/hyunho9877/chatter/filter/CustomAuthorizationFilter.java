@@ -66,7 +66,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     new ObjectMapper().writeValue(response.getOutputStream(), error_message);
                 }
             } else {
-                response.sendRedirect("/auth/sign.in");
+                response.sendRedirect("/auth/login");
             }
         }
     }

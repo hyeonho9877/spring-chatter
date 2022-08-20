@@ -35,7 +35,7 @@ public class RestAuthController {
     private final AuthService authService;
     private final CookieParser cookieParser;
 
-    @PostMapping("/registration.do")
+    @PostMapping("/registration")
     public ResponseEntity<String> registration(@Valid UserDto userDto) {
         log.info("received {}", userDto);
         try {
