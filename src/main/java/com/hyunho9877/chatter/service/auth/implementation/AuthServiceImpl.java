@@ -68,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
         return ApplicationUser.builder()
                 .email(userDto.getEmail())
                 .password(userDto.getPassword())
-                .name(userDto.getFirstName() + userDto.getLastName())
+                .name(userDto.getName())
                 .age(userDto.getAge())
                 .gender(userDto.getGender())
                 .role(Role.USER)

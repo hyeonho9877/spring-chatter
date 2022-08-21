@@ -57,7 +57,7 @@ public class SecurityConfig {
                 .addFilterBefore(new CustomAuthorizationFilter(secretKey(), config, filterChainValidator, cookieParser), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/auth/**").permitAll()
-                .antMatchers("/v1/auth/do", "/v1/auth/token/refresh", "/v1/auth/registration.do").permitAll()
+                .antMatchers("/v1/auth/do", "/v1/auth/token/refresh", "/v1/auth/registration").permitAll()
                 .anyRequest().authenticated().and()
                 .build();
     }
