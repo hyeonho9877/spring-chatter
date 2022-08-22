@@ -90,7 +90,6 @@ public class AuthServiceImpl implements AuthService {
             log.error("There is no user with " + email);
             throw new UsernameNotFoundException("There is no user with " + email);
         });
-        System.out.println(applicationUser);
         return new org.springframework.security.core.userdetails.User(
                 applicationUser.getEmail(),
                 applicationUser.getPassword(),

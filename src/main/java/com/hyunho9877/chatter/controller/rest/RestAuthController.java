@@ -50,7 +50,6 @@ public class RestAuthController {
 
     @PostMapping("/validate")
     public boolean validate(String email) {
-        System.out.println("email = " + email);
         return !authService.isDuplicated(email);
     }
 

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,9 +44,9 @@ public class SocialServiceImpl implements SocialService {
     }
 
     @Override
-    public Set<ApplicationUser> getFriends(String email) {
-        Set<Friends> result = friendsRepository.findByUser1(userRepository.getReferenceById(email));
-        return result.stream().map(Friends::getUser2).map(ApplicationUser::getPublicProfile).collect(Collectors.toSet());
+    public List<ApplicationUser> getFriends(String email) {
+        List<Friends> result = friendsRepository.findByUser1OrderByIdAsc(userRepository.getReferenceById(email));
+        return result.stream().map(Friends::getUser2).map(ApplicationUser::getPublicProfile).toList();
     }
 
     @Override

@@ -4,10 +4,15 @@ import com.hyunho9877.chatter.domain.ChatMessage;
 import com.hyunho9877.chatter.service.chat.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/chat")
@@ -20,7 +25,22 @@ public class RestChatController {
     @MessageMapping("/hello")
     public void newUser(@Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor) {
         headerAccessor.getSessionAttributes().put("username", message.getSender());
+        log.info("{}", message);
         chatService.send(message);
+    }
+
+    @PostMapping("/confirm")
+    public ResponseEntity<?> confirm(Authentication authentication, String targetUser) {
+        String username = (String) authentication.getPrincipal();
+        chatService.confirmMessage(username, targetUser);
+        return ResponseEntity.ok(targetUser);
+    }
+
+    @PostMapping("/get")
+    public ResponseEntity<List<ChatMessage>> getMessages(Authentication authentication) {
+        String username = (String) authentication.getPrincipal();
+        chatService.getMessages(username);
+        return ResponseEntity.ok().build();
     }
 
 }

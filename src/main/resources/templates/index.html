@@ -1,27 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <script>
-        $(function () {
-            let data = {"sender": "test4@gmail.com", "receiver": "test1@gmail.com", "message": "ohno"}
-            let socket = new SockJS('/ws');
-            let stomp = Stomp.over(socket);
-            stomp.connect({}, frame => {
-                stomp.subscribe('/queue/' + frame.headers['user-name'], response => {
-                    console.log('subscribe : ' + JSON.parse(response.body))
-                })
-                //stomp.send("/pub/hello", null, JSON.stringify(data));
-            })
-        })
-    </script>
+    <link rel="stylesheet" href="/css/mdb.min.css"/>
+    <script src="/js/mdb.min.js"></script>
+    <script src="/js/chat.js"></script>
+    <title>Chat.io</title>
 </head>
-<body>
+<body style="background-color: #CDC4F9;">
+<section>
+    <div class="container py-5">
 
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="card" id="chat3" style="border-radius: 15px;">
+                    <div class="card-body">
+
+                        <div class="row">
+                            <div class="col-md-6 col-lg-5 col-xl-4 mb-4 mb-md-0">
+
+                                <div class="p-3">
+
+                                    <div class="input-group rounded mb-3">
+                                        <input type="search" class="form-control rounded" placeholder="Search"
+                                               aria-label="Search"
+                                               aria-describedby="search-addon"/>
+                                        <span class="input-group-text border-0" id="search-addon">
+                      <i class="fas fa-search"></i>
+                    </span>
+                                    </div>
+                                    <div style="position: relative; height: 400px; overflow-y: scroll">
+                                        <ul class="list-unstyled mb-0" id="ul-friend">
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-lg-7 col-xl-8">
+                                <div class="pt-3 pe-3" style="position: relative; height: 400px; overflow-y: scroll" id="list-messages">
+
+                                </div>
+                                <div class="text-muted d-flex justify-content-start align-items-center pe-3 pt-3 mt-2">
+                                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava6-bg.webp"
+                                         alt="avatar 3" style="width: 40px; height: 100%;">
+                                    <input type="text" class="form-control form-control-lg"
+                                           id="input-message"
+                                           placeholder="Type message">
+                                    <a class="ms-1 text-muted" href="#!"><i class="fas fa-paperclip"></i></a>
+                                    <a class="ms-3 text-muted" href="#!"><i class="fas fa-smile"></i></a>
+                                    <a class="ms-3" href="#!"><i class="fas fa-paper-plane"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
 </body>
 </html>
