@@ -5,6 +5,7 @@ import com.hyunho9877.chatter.domain.Friends;
 import com.hyunho9877.chatter.repo.FriendsRepository;
 import com.hyunho9877.chatter.repo.UserRepository;
 import com.hyunho9877.chatter.service.social.SocialService;
+import com.hyunho9877.chatter.utils.ws.WebSocketSessionManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class SocialServiceImpl implements SocialService {
 
     private final UserRepository userRepository;
     private final FriendsRepository friendsRepository;
+    private final WebSocketSessionManager sessionManager;
 
     @Override
     public ApplicationUser getUser(String email) {
@@ -55,5 +57,10 @@ public class SocialServiceImpl implements SocialService {
         ApplicationUser applicationUser = userRepository.findById(email).orElseThrow();
         ApplicationUser friend = userRepository.getReferenceById(friendEmail);
         return friendEmail;
+    }
+
+    @Override
+    public boolean isOnline(String email) {
+        return sessionManager.isSessionExists(email);
     }
 }

@@ -11,4 +11,5 @@ public interface SocialService {
     String registerNewFriend(String email, String following);
     List<ApplicationUser> getFriends(String email);
     String removeFriend(String email, String friendEmail);
+    boolean isOnline(String email);
 }

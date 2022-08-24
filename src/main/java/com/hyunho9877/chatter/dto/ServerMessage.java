@@ -10,6 +10,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ServerMessage implements Serializable {
-    private MessageType type;
+    private UserStatus type;
     private String user;
 }

@@ -31,7 +31,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        log.info("username is {} and pwd is {}", username, password);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         return authenticationManager.authenticate(authenticationToken);
     }
@@ -39,11 +38,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         User user = (User) authentication.getPrincipal();
-        log.info("authenticated user : {}, authorities : {}", user.getUsername(), user.getAuthorities());
         String accessToken = jwtGenerator.generateAccessToken(user.getUsername(), request.getRequestURL().toString(), user.getAuthorities());
         String refreshToken = jwtGenerator.generateRefreshToken(user.getUsername(), request.getRequestURL().toString());
-//        response.setHeader(config.getAccessTokenHeader(), accessToken);
-//        response.setHeader(config.getRefreshTokenHeader(), refreshToken);
         Cookie accessCookie = new Cookie(jwtConfig.getAccessTokenHeader(), accessToken);
         accessCookie.setHttpOnly(true);
         accessCookie.setPath("/");
@@ -53,8 +49,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         refreshCookie.setHttpOnly(true);
         refreshCookie.setPath("/");
         refreshCookie.setMaxAge(jwtGenerator.getRefreshTokenExpiration() / 1000);
-
-        log.info("cookie domain {}", request.getServerName());
 
         response.addCookie(accessCookie);
         response.addCookie(refreshCookie);

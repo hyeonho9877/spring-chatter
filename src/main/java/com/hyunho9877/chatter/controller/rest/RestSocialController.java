@@ -32,6 +32,7 @@ public class RestSocialController {
     public ResponseEntity<List<ApplicationUser>> getFriends(Authentication authentication) {
         String username = (String) authentication.getPrincipal();
         List<ApplicationUser> friends = socialService.getFriends(username);
+        log.info("{}", friends);
         return ResponseEntity.ok(friends);
     }
 
@@ -46,5 +47,10 @@ public class RestSocialController {
     public ResponseEntity<String> unfollow(Authentication authentication, String userID) {
         String username = (String) authentication.getPrincipal();
         return ResponseEntity.ok(socialService.removeFriend(username, userID));
+    }
+
+    @PostMapping("/query")
+    public ResponseEntity<Boolean> queryOnline(String username) {
+        return ResponseEntity.ok(socialService.isOnline(username));
     }
 }

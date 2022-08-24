@@ -1,6 +1,7 @@
 package com.hyunho9877.chatter.utils.handler;
 
 import com.hyunho9877.chatter.service.chat.ChatService;
+import com.hyunho9877.chatter.utils.ws.WebSocketSessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -21,20 +22,21 @@ import java.util.Arrays;
 public class WebSocketEventHandler {
 
     private final ChatService chatService;
+    private final WebSocketSessionManager sessionManager;
 
     @EventListener
     public void webSocketConnectedListener(SessionConnectedEvent event) {
-        log.info("session connected : {}", event.getSource());
         UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) event.getUser();
         String username = authentication.getName();
         chatService.notifyOnline(username);
+        sessionManager.online(username);
     }
 
     @EventListener
     public void webSocketDisconnectedListener(SessionDisconnectEvent event) {
-        log.info("session disconnected : {}", event.getSource());
         UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) event.getUser();
         String username = authentication.getName();
         chatService.notifyOffline(username);
+        sessionManager.offline(username);
     }
 }

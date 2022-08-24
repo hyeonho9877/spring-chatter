@@ -7,10 +7,12 @@ import com.hyunho9877.chatter.domain.Friends;
 import com.hyunho9877.chatter.dto.MessageType;
 import com.hyunho9877.chatter.dto.ServerMessage;
 import com.hyunho9877.chatter.dto.UserMessage;
+import com.hyunho9877.chatter.dto.UserStatus;
 import com.hyunho9877.chatter.repo.ChatMessageRepository;
 import com.hyunho9877.chatter.repo.FriendsRepository;
 import com.hyunho9877.chatter.repo.UserRepository;
 import com.hyunho9877.chatter.service.chat.ChatService;
+import com.hyunho9877.chatter.utils.ws.WebSocketSessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpException;
@@ -54,7 +56,7 @@ public class ChatServiceImpl implements ChatService {
             rabbitTemplate.convertAndSend(
                     exchange,
                     friend.getEmail(),
-                    new ServerMessage(ONLINE, username))
+                    new ServerMessage(UserStatus.ONLINE, username))
         );
     }
 
@@ -65,7 +67,7 @@ public class ChatServiceImpl implements ChatService {
             rabbitTemplate.convertAndSend(
                     exchange,
                     friend.getEmail(),
-                    new ServerMessage(OFFLINE, friend.getEmail()))
+                    new ServerMessage(UserStatus.OFFLINE, username))
         );
     }
 
