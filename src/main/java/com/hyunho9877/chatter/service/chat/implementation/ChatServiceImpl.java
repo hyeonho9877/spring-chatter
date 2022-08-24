@@ -79,21 +79,21 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void getMessages(String username) {
+    public Map<String, List<UserMessage>> getMessages(String username) {
         HashMap<String, List<UserMessage>> messagesByUser = new HashMap<>();
         Collection<ChatMessage> messages = messageRepository.findBySenderOrReceiverOrderByTimestamp(username);
         messages.forEach(m -> {
             String receiver = m.getReceiver();
             String sender = m.getSender();
 
-            if(!sender.equals(username)) messagesByUser.putIfAbsent(sender, new ArrayList<>());
-            if(!receiver.equals(username)) messagesByUser.putIfAbsent(receiver, new ArrayList<>());
+            if (!sender.equals(username)) messagesByUser.putIfAbsent(sender, new ArrayList<>());
+            if (!receiver.equals(username)) messagesByUser.putIfAbsent(receiver, new ArrayList<>());
 
             UserMessage userMessage = new UserMessage(sender.equals(username) ? SEND : RECEIVE, m.getMessage(), m.getTimestamp());
 
-            if(userMessage.getType() == SEND) messagesByUser.get(receiver).add(userMessage);
+            if (userMessage.getType() == SEND) messagesByUser.get(receiver).add(userMessage);
             else messagesByUser.get(sender).add(userMessage);
         });
-
+        return messagesByUser;
     }
 }

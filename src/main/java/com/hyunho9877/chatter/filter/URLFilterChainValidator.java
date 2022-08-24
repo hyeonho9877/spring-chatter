@@ -18,7 +18,7 @@ public class URLFilterChainValidator implements FilterChainValidator{
         noAuthorizationNeededURL.add("/v1/auth/do");
         noAuthorizationNeededURL.add("/v1/auth/token/refresh");
         noAuthorizationNeededURL.add("/auth/login");
-        noAuthorizationNeededURL.add("/favicon.ico");
+        noAuthorizationNeededURL.add("/static/favicon.ico");
     }
 
     @Override

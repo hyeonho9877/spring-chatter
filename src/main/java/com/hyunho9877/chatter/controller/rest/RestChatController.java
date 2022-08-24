@@ -1,6 +1,7 @@
 package com.hyunho9877.chatter.controller.rest;
 
 import com.hyunho9877.chatter.domain.ChatMessage;
+import com.hyunho9877.chatter.dto.UserMessage;
 import com.hyunho9877.chatter.service.chat.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/v1/chat")
@@ -37,10 +39,9 @@ public class RestChatController {
     }
 
     @PostMapping("/get")
-    public ResponseEntity<List<ChatMessage>> getMessages(Authentication authentication) {
+    public ResponseEntity<Map<String, List<UserMessage>>> getMessages(Authentication authentication) {
         String username = (String) authentication.getPrincipal();
-        chatService.getMessages(username);
-        return ResponseEntity.ok().build();
+        Map<String, List<UserMessage>> messages = chatService.getMessages(username);
+        return ResponseEntity.ok(messages);
     }
-
 }
