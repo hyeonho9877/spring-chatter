@@ -96,12 +96,13 @@ $(function () {
         type: 'POST',
         url: '/v1/social/following',
         success: (friends, text, request) => {
-            let friends_ul = document.getElementById('ul-friend');
+            let friends_ul = getFriendsListArea();
             friends.forEach(friend => {
                 friendsMap.set(friend.email, new Friend(friend.onlineStatus, friend.email, friend.name, friend.unconfirmed, friend.lastChatted, friend.lastMessage))
                 friends_ul.innerHTML += addFriendElement(friendsMap.get(friend.email))
             })
             getMessages();
+            addSearchListener()
 
         },
         error: (err, text, request) => {
@@ -157,7 +158,6 @@ function addSentMessage(message, date) {
 }
 
 function addFriendElement(friend) {
-    console.log(friend)
     return "<li class='p-2 border-bottom chatter' id='" + friend.email + "'>" +
         "<a href='#!' class='d-flex justify-content-between'>" +
         "<div class='d-flex flex-row'>" +
@@ -201,13 +201,7 @@ function getMessages() {
                 if (userMessage !== undefined)
                     userMessage.forEach(m => updateChatHistory(m['type'], f, m['message'], m['timestamp']))
             }
-            $('.chatter').on('click', function () {
-                receiver = $(this).attr('id');
-                confirm(receiver, false)
-                removeNotification(receiver)
-                renderChat()
-                scrollToBottom()
-            })
+            addChatClickListener()
         }
     })
 }
@@ -290,19 +284,16 @@ function getLastTimeArea(id) {
     return document.getElementById('last-time-' + id);
 }
 
+function getFriendsListArea(){
+    return document.getElementById('ul-friend')
+}
+
 function validateMessage(message) {
     return message.length !== 0
 }
 
 function calDate(dateString) {
     let today = new Date();
-    console.log(dateString)
-    console.log('year : ' + parseInt(dateString.substring(0, 5)))
-    console.log('year result : ' + dateString.substring(0, 10))
-    console.log('month : ' + parseInt(dateString.substring(5, 7)))
-    console.log('date : ' + parseInt(dateString.substring(8, 10)))
-    console.log('date result : ' + dateString.substring(11, 17))
-    console.log('else result : ' + dateString.substring(5, 10))
     if (today.getFullYear() > parseInt(dateString.substring(0, 5))) return dateString.substring(0, 10)
     else if (today.getMonth() === parseInt(dateString.substring(5, 7)) - 1 && today.getDate() === parseInt(dateString.substring(8, 10)))
         return dateString.substring(11, 17)
@@ -312,8 +303,30 @@ function calDate(dateString) {
 
 function addSearchListener() {
     let searchInput = document.getElementById('input-search');
-    searchInput.addEventListener('keyup', ev => {
-        let keyword = ev.target.value;
-        console.log(keyword)
+    searchInput.addEventListener('keyup', logKey)
+}
+
+function addChatClickListener() {
+    $('.chatter').on('click', function () {
+        receiver = $(this).attr('id');
+        confirm(receiver, false)
+        removeNotification(receiver)
+        renderChat()
+        scrollToBottom()
     })
+}
+
+function logKey(e) {
+    let keyword = e.target.value;
+    let friendsListArea = getFriendsListArea();
+    receiver = ''
+    friendsListArea.innerHTML = ''
+    for(let key of friendsMap.keys()) {
+        let friend = friendsMap.get(key);
+        if(friend.name.includes(keyword)) {
+            console.log(friend)
+            friendsListArea.innerHTML += addFriendElement(friend)
+        }
+    }
+    addChatClickListener()
 }

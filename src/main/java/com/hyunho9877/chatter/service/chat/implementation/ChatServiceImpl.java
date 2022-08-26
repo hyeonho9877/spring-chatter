@@ -46,8 +46,16 @@ public class ChatServiceImpl implements ChatService {
             String timestamp = message.getTimestamp();
             List<Friends> friendRelation = friendsRepository.findFriendsBySenderAndReceiver(sender, receiver);
             assert friendRelation.size() == 2;
-            Friends bySender = friendRelation.get(0);
-            Friends byReceiver = friendRelation.get(1);
+
+            Friends bySender;
+            Friends byReceiver;
+            if(friendRelation.get(0).getUser1().getEmail().equals(message.getSender())) {
+                bySender = friendRelation.get(0);
+                byReceiver = friendRelation.get(1);
+            } else {
+                bySender = friendRelation.get(1);
+                byReceiver = friendRelation.get(0);
+            }
 
             // update time
             updateLastTime(bySender, timestamp);
@@ -122,8 +130,8 @@ public class ChatServiceImpl implements ChatService {
         friends.setLastMessage(message);
     }
 
-    private void updateUnconfirmed(Friends friends){
-        friends.setUnconfirmed(friends.getUnconfirmed() + 1);
+    private void updateUnconfirmed(Friends byReceiver){
+        byReceiver.setUnconfirmed(byReceiver.getUnconfirmed() + 1);
     }
 
     private void updateConfirmed(String username, String sender){
