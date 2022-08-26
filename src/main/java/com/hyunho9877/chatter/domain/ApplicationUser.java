@@ -7,9 +7,6 @@ import com.hyunho9877.chatter.utils.ws.WebSocketSessionManager;
 import lombok.*;
 import javax.persistence.*;
 
-import static com.hyunho9877.chatter.dto.UserStatus.*;
-import static com.hyunho9877.chatter.dto.UserStatus.OFFLINE;
-
 @Entity
 @Getter
 @Setter
@@ -27,10 +24,26 @@ public class ApplicationUser {
     private Gender gender;
     @Convert(converter = RoleConverter.class)
     private Role role;
-    @org.springframework.data.annotation.Transient
+    @Transient
     private UserStatus onlineStatus;
+    @Transient
+    private int unconfirmed;
+    @Transient
+    private String lastMessage;
+    @Transient
+    private String lastChatted;
 
-    public static ApplicationUser getPublicProfile(ApplicationUser user) {
-        return new ApplicationUser(user.getEmail(), null, user.getName(), user.getAge(), user.getGender(), null, WebSocketSessionManager.isSessionExists(user.getEmail()) ? ONLINE : OFFLINE);
+    public static ApplicationUser getPublicProfile(Friends friend) {
+        ApplicationUser user = friend.getUser2();
+        return ApplicationUser.builder()
+                .email(user.getEmail())
+                .name(user.getName())
+                .age(user.getAge())
+                .onlineStatus(WebSocketSessionManager.isSessionExists(user.getEmail()))
+                .gender(user.getGender())
+                .unconfirmed(friend.getUnconfirmed())
+                .lastMessage(friend.getLastMessage())
+                .lastChatted(friend.getLastChattedTime())
+                .build();
     }
 }

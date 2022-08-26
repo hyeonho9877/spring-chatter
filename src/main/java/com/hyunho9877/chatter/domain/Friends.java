@@ -23,6 +23,10 @@ public class Friends {
     @ManyToOne
     private ApplicationUser user2;
 
+    private Integer unconfirmed;
+    private String lastMessage;
+    private String lastChattedTime;
+
     public Friends() {
     }
 
@@ -33,6 +37,13 @@ public class Friends {
 
     public static Friends of(ApplicationUser user1, ApplicationUser user2) {
         return new Friends(user1, user2);
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.unconfirmed = 0;
+        this.lastChattedTime = "";
+        this.lastMessage = "";
     }
 
 }

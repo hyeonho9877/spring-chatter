@@ -32,7 +32,6 @@ public class RestSocialController {
     public ResponseEntity<List<ApplicationUser>> getFriends(Authentication authentication) {
         String username = (String) authentication.getPrincipal();
         List<ApplicationUser> friends = socialService.getFriends(username);
-        log.info("{}", friends);
         return ResponseEntity.ok(friends);
     }
 

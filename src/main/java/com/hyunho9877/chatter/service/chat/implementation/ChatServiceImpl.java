@@ -4,23 +4,20 @@ import com.hyunho9877.chatter.domain.ApplicationUser;
 import com.hyunho9877.chatter.domain.ChatMessage;
 import com.hyunho9877.chatter.domain.Exchange;
 import com.hyunho9877.chatter.domain.Friends;
-import com.hyunho9877.chatter.dto.MessageType;
 import com.hyunho9877.chatter.dto.ServerMessage;
 import com.hyunho9877.chatter.dto.UserMessage;
 import com.hyunho9877.chatter.dto.UserStatus;
 import com.hyunho9877.chatter.repo.ChatMessageRepository;
 import com.hyunho9877.chatter.repo.FriendsRepository;
-import com.hyunho9877.chatter.repo.UserRepository;
 import com.hyunho9877.chatter.service.chat.ChatService;
-import com.hyunho9877.chatter.utils.ws.WebSocketSessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.crypto.dsig.keyinfo.PGPData;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -38,11 +35,30 @@ public class ChatServiceImpl implements ChatService {
     private final FriendsRepository friendsRepository;
 
     @Override
+    @Transactional
     public void send(ChatMessage message) {
         try {
             message.setTimestamp(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(LocalDateTime.now()));
             rabbitTemplate.convertAndSend(exchange, message.getReceiver(), message);
             messageRepository.save(message);
+            String receiver = message.getReceiver();
+            String sender = message.getSender();
+            String timestamp = message.getTimestamp();
+            List<Friends> friendRelation = friendsRepository.findFriendsBySenderAndReceiver(sender, receiver);
+            assert friendRelation.size() == 2;
+            Friends bySender = friendRelation.get(0);
+            Friends byReceiver = friendRelation.get(1);
+
+            // update time
+            updateLastTime(bySender, timestamp);
+            updateLastTime(byReceiver, timestamp);
+
+            // update message
+            updateLastMessage(bySender, message.getMessage());
+            updateLastMessage(byReceiver, message.getMessage());
+
+            // update unconfirmed Count
+            updateUnconfirmed(byReceiver);
         } catch (AmqpException e) {
             e.printStackTrace();
             log.error("message send failed : {}", message);
@@ -73,8 +89,9 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     @Transactional
-    public void confirmMessage(String username, String receiver) {
-        Collection<ChatMessage> messages = messageRepository.findBySenderAndReceiverAndConfirmedFalse(username, receiver);
+    public void confirmMessage(String username, String sender) {
+        Collection<ChatMessage> messages = messageRepository.findBySenderAndReceiverAndConfirmedFalse(sender, username);
+        updateConfirmed(username, sender);
         messages.forEach(m -> m.setConfirmed(true));
     }
 
@@ -95,5 +112,27 @@ public class ChatServiceImpl implements ChatService {
             else messagesByUser.get(sender).add(userMessage);
         });
         return messagesByUser;
+    }
+
+    private void updateLastTime(Friends friends, String timestamp) {
+        friends.setLastChattedTime(timestamp);
+    }
+
+    private void updateLastMessage(Friends friends, String message) {
+        friends.setLastMessage(message);
+    }
+
+    private void updateUnconfirmed(Friends friends){
+        friends.setUnconfirmed(friends.getUnconfirmed() + 1);
+    }
+
+    private void updateConfirmed(String username, String sender){
+        List<Friends> friendRelation = friendsRepository.findFriendsBySenderAndReceiver(sender, username);
+        Friends relation = friendRelation.get(0);
+        if(relation.getUser1().getEmail().equals(username)) relation.setUnconfirmed(0);
+        else {
+            relation = friendRelation.get(1);
+            relation.setUnconfirmed(0);
+        }
     }
 }

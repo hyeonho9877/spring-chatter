@@ -2,6 +2,7 @@ package com.hyunho9877.chatter.service.social.implementation;
 
 import com.hyunho9877.chatter.domain.ApplicationUser;
 import com.hyunho9877.chatter.domain.Friends;
+import com.hyunho9877.chatter.dto.UserStatus;
 import com.hyunho9877.chatter.repo.FriendsRepository;
 import com.hyunho9877.chatter.repo.UserRepository;
 import com.hyunho9877.chatter.service.social.SocialService;
@@ -23,7 +24,6 @@ public class SocialServiceImpl implements SocialService {
 
     private final UserRepository userRepository;
     private final FriendsRepository friendsRepository;
-    private final WebSocketSessionManager sessionManager;
 
     @Override
     public ApplicationUser getUser(String email) {
@@ -48,7 +48,7 @@ public class SocialServiceImpl implements SocialService {
     @Override
     public List<ApplicationUser> getFriends(String email) {
         List<Friends> result = friendsRepository.findByUser1OrderByIdAsc(userRepository.getReferenceById(email));
-        return result.stream().map(Friends::getUser2).map(ApplicationUser::getPublicProfile).toList();
+        return result.stream().map(ApplicationUser::getPublicProfile).toList();
     }
 
     @Override
@@ -61,6 +61,6 @@ public class SocialServiceImpl implements SocialService {
 
     @Override
     public boolean isOnline(String email) {
-        return sessionManager.isSessionExists(email);
+        return WebSocketSessionManager.isSessionExists(email) == UserStatus.ONLINE;
     }
 }

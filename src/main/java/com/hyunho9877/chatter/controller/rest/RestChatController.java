@@ -27,15 +27,15 @@ public class RestChatController {
     @MessageMapping("/hello")
     public void newUser(@Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor) {
         headerAccessor.getSessionAttributes().put("username", message.getSender());
-        log.info("{}", message);
         chatService.send(message);
     }
 
     @PostMapping("/confirm")
-    public ResponseEntity<?> confirm(Authentication authentication, String targetUser) {
+    public ResponseEntity<?> confirm(Authentication authentication, String user) {
+        log.info("{}", user);
         String username = (String) authentication.getPrincipal();
-        chatService.confirmMessage(username, targetUser);
-        return ResponseEntity.ok(targetUser);
+        chatService.confirmMessage(username, user);
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping("/get")

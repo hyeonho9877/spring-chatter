@@ -27,6 +27,7 @@ public class WebSocketEventHandler {
     @EventListener
     public void webSocketConnectedListener(SessionConnectedEvent event) {
         UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) event.getUser();
+        assert authentication != null;
         String username = authentication.getName();
         chatService.notifyOnline(username);
         sessionManager.online(username);
@@ -35,6 +36,7 @@ public class WebSocketEventHandler {
     @EventListener
     public void webSocketDisconnectedListener(SessionDisconnectEvent event) {
         UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) event.getUser();
+        assert authentication != null;
         String username = authentication.getName();
         chatService.notifyOffline(username);
         sessionManager.offline(username);
