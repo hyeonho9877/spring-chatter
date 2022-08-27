@@ -55,6 +55,7 @@ class Friend {
 }
 
 $(function () {
+    addDropDownListener()
     messageListArea = document.getElementById('list-messages')
     stomp.connect({}, frame => {
         connected = true
@@ -246,9 +247,9 @@ function updateLastMessage(id, message) {
 function updateLastTime(id, timestamp) {
     let lastTime = getLastTimeArea(id);
 
-    if(timestamp === undefined) {
+    if (timestamp === undefined) {
         let today = new Date();
-        timestamp = padding(today.getHours())+":"+padding(today.getMinutes())
+        timestamp = padding(today.getHours()) + ":" + padding(today.getMinutes())
     }
     lastTime.innerHTML = timestamp
 }
@@ -284,7 +285,7 @@ function getLastTimeArea(id) {
     return document.getElementById('last-time-' + id);
 }
 
-function getFriendsListArea(){
+function getFriendsListArea() {
     return document.getElementById('ul-friend')
 }
 
@@ -321,12 +322,41 @@ function logKey(e) {
     let friendsListArea = getFriendsListArea();
     receiver = ''
     friendsListArea.innerHTML = ''
-    for(let key of friendsMap.keys()) {
+    for (let key of friendsMap.keys()) {
         let friend = friendsMap.get(key);
-        if(friend.name.includes(keyword)) {
+        if (friend.name.includes(keyword)) {
             console.log(friend)
             friendsListArea.innerHTML += addFriendElement(friend)
         }
     }
     addChatClickListener()
+}
+
+function addDropDownListener() {
+    let notification = document.getElementById('navbarDropdownMenuLink');
+    let notificationMenu = document.getElementById('dropdown-menu-notification');
+
+    let avatar = document.getElementById('navbarDropdownMenuAvatar')
+    let avatarMenu = document.getElementById('dropdown-menu-avatar')
+
+    addDropDownEventByTarget(notification, notificationMenu, avatar, avatarMenu)
+    addDropDownEventByTarget(avatar, avatarMenu, notification, notificationMenu)
+}
+
+function addDropDownEventByTarget(target, menu, rival, rivalMenu) {
+    target.addEventListener('click', ev => {
+        let expanded = target.getAttribute('aria-expanded');
+        if (expanded === 'false') {
+            if (rival.getAttribute('aria-expanded') === 'true') {
+                rival.setAttribute('aria-expanded', 'false')
+                rivalMenu.classList.remove('show')
+            }
+            target.setAttribute('aria-expanded', 'true')
+            menu.setAttribute('data-mdb-popper', 'none')
+            menu.classList.add('show')
+        } else {
+            menu.classList.remove('show')
+            target.setAttribute('aria-expanded', 'false')
+        }
+    })
 }
