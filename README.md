@@ -1,6 +1,7 @@
 # spring-chatter
 
 ### 스프링을 이용한 채팅 어플리케이션
+<img src='https://user-images.githubusercontent.com/47271188/187018993-e7ba0b7a-f518-433e-a767-4f883293ed97.png'>
 
 기능
 ---
