@@ -1,10 +1,14 @@
 package com.hyunho9877.chatter.domain;
 
+import com.google.common.base.Strings;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 @Entity
@@ -18,10 +22,12 @@ public class ChatMessage implements Serializable {
     private String sender;
     private String receiver;
     private String message;
-    private LocalDateTime timestamp;
+    private String timestamp;
+    private boolean confirmed = false;
 
     @PrePersist
-    public void timestamp() {
-        this.timestamp = LocalDateTime.now();
+    public void prePersist() {
+        if(Strings.isNullOrEmpty(this.timestamp)) this.timestamp = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(LocalDateTime.now());
+        this.confirmed = false;
     }
 }

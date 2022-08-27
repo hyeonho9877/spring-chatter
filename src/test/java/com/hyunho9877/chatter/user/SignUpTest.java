@@ -29,13 +29,12 @@ public class SignUpTest {
         userDto.setEmail("valid@gmail.com");
         userDto.setPassword("password");
         userDto.setMatchingPassword("password");
-        userDto.setFirstName("first");
-        userDto.setLastName("last");
+        userDto.setName("first");
         userDto.setAge(15);
         userDto.setGender(Gender.MALE);
 
         ApplicationUser applicationUser = userService.registerNewUserAccount(userService.buildUser(userDto)).orElseThrow();
-        assertThat(applicationUser.getName()).isEqualTo(userDto.getFirstName() + userDto.getLastName());
+        assertThat(applicationUser.getName()).isEqualTo(userDto.getName());
         assertThat(applicationUser.getEmail()).isEqualTo(userDto.getEmail());
         assertThat(applicationUser.getAge()).isSameAs(userDto.getAge());
         assertThat(applicationUser.getGender()).isSameAs(userDto.getGender());
@@ -48,8 +47,7 @@ public class SignUpTest {
         userDto1.setEmail("invalidMail");
         userDto1.setPassword("password");
         userDto1.setMatchingPassword("password");
-        userDto1.setFirstName("first");
-        userDto1.setLastName("last");
+        userDto1.setName("first");
         userDto1.setAge(15);
         userDto1.setGender(Gender.MALE);
         userService.registerNewUserAccount(userService.buildUser(userDto1)).orElseThrow();
@@ -58,8 +56,7 @@ public class SignUpTest {
         userDto2.setEmail("invalidMail");
         userDto2.setPassword("password");
         userDto2.setMatchingPassword("password");
-        userDto2.setFirstName("first");
-        userDto2.setLastName("last");
+        userDto2.setName("first");
         userDto2.setAge(15);
         userDto2.setGender(Gender.MALE);
 

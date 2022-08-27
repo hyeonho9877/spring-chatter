@@ -17,15 +17,13 @@ import javax.validation.constraints.NotEmpty;
 public class UserDto {
     @NotNull
     @NotEmpty
-    private String firstName;
-
-    @NotNull
-    @NotEmpty
-    private String lastName;
+    private String name;
 
     @NotNull
     @NotEmpty
     private String password;
+    @NotNull
+    @NotEmpty
     private String matchingPassword;
 
     @ValidEmail

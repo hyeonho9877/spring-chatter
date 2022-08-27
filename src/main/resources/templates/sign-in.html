@@ -1,8 +1,9 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>로그인</title>
+    <title>SignIn</title>
+    <link rel="stylesheet" href="/css/mdb.min.css"/>
+    <script src="/js/mdb.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script>
@@ -24,12 +25,47 @@
             })
         })
     </script>
+    <style>
+        .divider:after, .divider:before {
+            content: "";
+            flex: 1;
+            height: 2px;
+            background: #eee;
+        }
+    </style>
 </head>
-<body>
-<form action="" id="sign-in-form">
-    <p><label for="username">아이디</label> <input type="text" name="username" id="username"/></p>
-    <p><label for="password">비밀번호</label> <input type="password" name="password" id="password"/></p>
-    <button id="btn-submit">로그인</button>
-</form>
+<body class="d-flex align-items-center">
+<div class="container-fluid">
+    <div class="row d-flex align-items-center justify-content-center">
+        <div class="col-lg-4 col-md-8">
+            <img class="img-fluid" src="/images/sign-in-img.jpg"/>
+        </div>
+        <div class="col-lg-4 p-3">
+            <form id="sign-in-form">
+                <div class="mb-4 fs-1 text-primary fw-bold text-start">
+                    Chat.io
+                </div>
+                <div class="mb-3">
+                    <label for="username" class="form-label fs-5">Email address</label>
+                    <input type="email" class="form-control" id="username" name="username" aria-describedby="emailHelp" placeholder="example@domain.com" autofocus>
+                    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label fs-5">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="**********">
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block fs-6">Sign In</button>
+                <div class="divider d-flex align-items-center my-4">
+                    <p class="text-center fw-bold mx-3 mb-0 text-muted">OR</p>
+                </div>
+                <a href="/auth/registration" type="button" class="btn btn-info btn-block fs-6">Sign Up</a>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 </html>

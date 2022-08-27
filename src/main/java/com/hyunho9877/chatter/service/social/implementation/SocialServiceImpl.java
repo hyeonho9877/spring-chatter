@@ -2,14 +2,18 @@ package com.hyunho9877.chatter.service.social.implementation;
 
 import com.hyunho9877.chatter.domain.ApplicationUser;
 import com.hyunho9877.chatter.domain.Friends;
+import com.hyunho9877.chatter.dto.UserStatus;
 import com.hyunho9877.chatter.repo.FriendsRepository;
 import com.hyunho9877.chatter.repo.UserRepository;
 import com.hyunho9877.chatter.service.social.SocialService;
+import com.hyunho9877.chatter.utils.ws.WebSocketSessionManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,9 +46,9 @@ public class SocialServiceImpl implements SocialService {
     }
 
     @Override
-    public Set<ApplicationUser> getFriends(String email) {
-        Set<Friends> result = friendsRepository.findByUser1(userRepository.getReferenceById(email));
-        return result.stream().map(Friends::getUser2).map(ApplicationUser::getPublicProfile).collect(Collectors.toSet());
+    public List<ApplicationUser> getFriends(String email) {
+        List<Friends> result = friendsRepository.findByUser1OrderByIdAsc(userRepository.getReferenceById(email));
+        return result.stream().map(ApplicationUser::getPublicProfile).toList();
     }
 
     @Override
@@ -53,5 +57,10 @@ public class SocialServiceImpl implements SocialService {
         ApplicationUser applicationUser = userRepository.findById(email).orElseThrow();
         ApplicationUser friend = userRepository.getReferenceById(friendEmail);
         return friendEmail;
+    }
+
+    @Override
+    public boolean isOnline(String email) {
+        return WebSocketSessionManager.isSessionExists(email) == UserStatus.ONLINE;
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -28,9 +29,10 @@ public class RestSocialController {
     }
 
     @PostMapping("/following")
-    public ResponseEntity<Set<ApplicationUser>> getFriends(Authentication authentication) {
+    public ResponseEntity<List<ApplicationUser>> getFriends(Authentication authentication) {
         String username = (String) authentication.getPrincipal();
-        return ResponseEntity.ok(socialService.getFriends(username));
+        List<ApplicationUser> friends = socialService.getFriends(username);
+        return ResponseEntity.ok(friends);
     }
 
     @PostMapping("/follow")
@@ -44,5 +46,10 @@ public class RestSocialController {
     public ResponseEntity<String> unfollow(Authentication authentication, String userID) {
         String username = (String) authentication.getPrincipal();
         return ResponseEntity.ok(socialService.removeFriend(username, userID));
+    }
+
+    @PostMapping("/query")
+    public ResponseEntity<Boolean> queryOnline(String username) {
+        return ResponseEntity.ok(socialService.isOnline(username));
     }
 }
