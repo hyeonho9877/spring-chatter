@@ -1,6 +1,8 @@
 # spring-chatter
 
 ### 스프링을 이용한 채팅 어플리케이션
+
+## 시스템 구조도
 <img src='https://user-images.githubusercontent.com/47271188/187018993-e7ba0b7a-f518-433e-a767-4f883293ed97.png'>
 
 기능
@@ -17,4 +19,5 @@
 3. 채팅   
   3-1 친구와 채팅 시작   
   3-2 채팅 종료   
+  3-3 메시지 알림
   
