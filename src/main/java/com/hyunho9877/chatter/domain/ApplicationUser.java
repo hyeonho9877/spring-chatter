@@ -6,6 +6,7 @@ import com.hyunho9877.chatter.utils.converter.RoleConverter;
 import com.hyunho9877.chatter.utils.ws.WebSocketSessionManager;
 import lombok.*;
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Getter
@@ -14,7 +15,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class ApplicationUser {
+public class ApplicationUser implements Serializable {
     @Id
     private String email;
     private String password;
@@ -34,7 +35,7 @@ public class ApplicationUser {
     private String lastChatted;
 
     public static ApplicationUser getPublicProfile(Friends friend) {
-        ApplicationUser user = friend.getUser2();
+        ApplicationUser user = friend.getAppFriend();
         return ApplicationUser.builder()
                 .email(user.getEmail())
                 .name(user.getName())

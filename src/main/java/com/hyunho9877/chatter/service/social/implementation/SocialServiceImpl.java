@@ -12,14 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class SocialServiceImpl implements SocialService {
 
     private final UserRepository userRepository;
@@ -37,17 +33,26 @@ public class SocialServiceImpl implements SocialService {
     }
 
     @Override
+    public List<ApplicationUser> getUsers(String keyword) {
+        return userRepository.findByNameContainsIgnoreCase(keyword);
+    }
+
+    @Override
     public String registerNewFriend(String email, String following) throws EntityNotFoundException {
         ApplicationUser user = userRepository.findById(email).orElseThrow();
-        ApplicationUser friend = userRepository.getReferenceById(following);
-        friendsRepository.saveAndFlush(Friends.of(user, friend));
-        friendsRepository.saveAndFlush(Friends.of(friend, user));
+        ApplicationUser friend = userRepository.findById(following).orElseThrow();
+        try {
+            friendsRepository.save(Friends.of(user, friend));
+            friendsRepository.save(Friends.of(friend, user));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return following;
     }
 
     @Override
     public List<ApplicationUser> getFriends(String email) {
-        List<Friends> result = friendsRepository.findByUser1OrderByIdAsc(userRepository.getReferenceById(email));
+        List<Friends> result = friendsRepository.findByUser(email);
         return result.stream().map(ApplicationUser::getPublicProfile).toList();
     }
 

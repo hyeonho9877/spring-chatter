@@ -37,7 +37,6 @@ public class AuthServiceImpl implements AuthService {
 
     public Optional<ApplicationUser> registerNewUserAccount(ApplicationUser applicationUser) {
         if (isDuplicated(applicationUser.getEmail())) return Optional.empty();
-        log.info("Saving new user {} to the database", applicationUser.getEmail());
         applicationUser.setPassword(encoder.encode(applicationUser.getPassword()));
         rabbitMQUtils.declareQueue(applicationUser.getEmail(), true);
         return Optional.of(userRepository.save(applicationUser));

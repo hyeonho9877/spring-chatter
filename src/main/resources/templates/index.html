@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-            rel="stylesheet"
-    />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -14,8 +11,71 @@
     <script src="/js/mdb.min.js"></script>
     <script src="/js/chat.js"></script>
     <title>Chat.io</title>
+    <style>
+        .my-modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+
+            display: none;
+
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .my-modal.show {
+            display: block;
+        }
+
+        .my-modal-body {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+
+            width: 400px;
+            height: 600px;
+
+            padding: 40px;
+
+            text-align: center;
+
+            background-color: rgb(255, 255, 255);
+            border-radius: 10px;
+            box-shadow: 0 2px 3px 0 rgba(34, 36, 38, 0.15);
+
+            transform: translateX(-50%) translateY(-50%);
+        }
+
+        .btn.btn-outline-primary:hover {
+            background-color: #1266f1;
+            color: white;
+        }
+
+        p {
+            margin-bottom: 0;
+        }
+    </style>
 </head>
 <body style="background-color: #CDC4F9;">
+<div class="my-modal">
+    <div class="my-modal-body">
+        <div class="input-group rounded mb-3">
+            <input type="search" class="form-control rounded" placeholder="Search"
+                   aria-label="Search"
+                   aria-describedby="search-addon"
+                   id="add-friend-search"
+                   autofocus
+            />
+        </div>
+        <div style="position: relative; height: 400px; overflow-y: auto; overflow-x: hidden">
+            <ul class="list-unstyled mb-0" id="search-result-list">
+            </ul>
+        </div>
+    </div>
+</div>
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-nav">
     <!-- Container wrapper -->
@@ -24,7 +84,7 @@
         <!-- Collapsible wrapper -->
         <div class="navbar-nav" id="navbarSupportedContent">
             <!-- Navbar brand -->
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="/">
                 <img
                         src="/images/Chat.io.png"
                         height="20"
@@ -37,11 +97,6 @@
 
         <!-- Right elements -->
         <div class="d-flex align-items-center">
-            <!-- Icon -->
-            <a class="text-reset me-3" href="#">
-                <i class="fas fa-shopping-cart"></i>
-            </a>
-
             <!-- Notifications -->
             <div class="dropdown">
                 <a
@@ -53,7 +108,7 @@
                         aria-expanded="false"
                 >
                     <i class="fas fa-bell"></i>
-                    <span class="badge rounded-pill badge-notification bg-danger">1</span>
+                    <span class="badge rounded-pill badge-notification bg-danger" id="badge-notification"></span>
                 </a>
                 <ul
                         id="dropdown-menu-notification"
@@ -126,10 +181,13 @@
                                                aria-label="Search"
                                                aria-describedby="search-addon" id="input-search"/>
                                         <span class="input-group-text border-0" id="search-addon">
-                      <i class="fas fa-search"></i>
-                    </span>
+                                            <i class="fas fa-search" id="find-friend"></i>
+                                        </span>
+                                        <span class="input-group-text border-0" id="add-friend-addon">
+                                            <a class="fas" id="add-friend" style="cursor: pointer">+</a>
+                                        </span>
                                     </div>
-                                    <div style="position: relative; height: 400px; overflow-y: scroll; overflow-x: hidden">
+                                    <div style="position: relative; height: 400px; overflow-y: auto; overflow-x: hidden">
                                         <ul class="list-unstyled mb-0" id="ul-friend">
                                         </ul>
                                     </div>
@@ -137,7 +195,7 @@
                             </div>
 
                             <div class="col-md-6 col-lg-7 col-xl-8">
-                                <div class="pt-3 pe-3" style="position: relative; height: 400px; overflow-y: scroll"
+                                <div class="pt-3 pe-3" style="position: relative; height: 400px; overflow-y: auto"
                                      id="list-messages">
 
                                 </div>

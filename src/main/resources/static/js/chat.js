@@ -54,9 +54,45 @@ class Friend {
     }
 }
 
+
 $(function () {
     addDropDownListener()
     messageListArea = document.getElementById('list-messages')
+
+    $.ajax({
+        type: 'POST',
+        url: '/v1/social/following',
+        success: (friends, text, request) => {
+            let friends_ul = getFriendsListArea();
+            friends.forEach(friend => {
+                friendsMap.set(friend.email, new Friend(friend.onlineStatus, friend.email, friend.name, friend.unconfirmed, friend.lastChatted, friend.lastMessage))
+                friends_ul.innerHTML += addFriendElement(friendsMap.get(friend.email))
+            })
+            getMessages();
+            subscribe();
+            addSearchListener();
+            addFriendListener();
+            addFriendSearchListener();
+        },
+        error: (err, text, request) => {
+            console.log(err);
+        }
+    })
+
+    let target = document.getElementById('input-message');
+
+    target.addEventListener('keyup', e => {
+        let key = e.code
+        if (key === 'Enter') {
+            if (connected && receiver !== '') {
+                send(target.value)
+                target.value = ''
+            }
+        }
+    })
+})
+
+function subscribe() {
     stomp.connect({}, frame => {
         connected = true
         sender = frame.headers['user-name']
@@ -80,7 +116,7 @@ $(function () {
             } else {
                 if (receiver !== body.sender) {
                     notifyMessageReceived(body.sender, body.message)
-                    updateChatHistory('RECEIVE', body.sender, body.message, body.timestamp)
+                    if (friendsMap.get(body.sender).unconfirmed === 0) updateChatHistory('RECEIVE', body.sender, body.message, body.timestamp)
                 } else {
                     confirm(body.sender, true)
                     updateChatHistory('RECEIVE', receiver, body.message, body.timestamp)
@@ -92,36 +128,7 @@ $(function () {
             }
         })
     })
-
-    $.ajax({
-        type: 'POST',
-        url: '/v1/social/following',
-        success: (friends, text, request) => {
-            let friends_ul = getFriendsListArea();
-            friends.forEach(friend => {
-                friendsMap.set(friend.email, new Friend(friend.onlineStatus, friend.email, friend.name, friend.unconfirmed, friend.lastChatted, friend.lastMessage))
-                friends_ul.innerHTML += addFriendElement(friendsMap.get(friend.email))
-            })
-            getMessages();
-            addSearchListener()
-
-        },
-        error: (err, text, request) => {
-            console.log(err);
-        }
-    })
-    let target = document.getElementById('input-message');
-
-    target.addEventListener('keyup', e => {
-        let key = e.code
-        if (key === 'Enter') {
-            if (connected && receiver !== '') {
-                send(target.value)
-                target.value = ''
-            }
-        }
-    })
-})
+}
 
 function send(message) {
     if (connected && validateMessage(message)) {
@@ -136,7 +143,7 @@ function send(message) {
 }
 
 function addReceivedMessage(message, date) {
-    let dateString = date.getHours() + ':' + date.getMinutes() + ' | ' + months[date.getMonth()] + ' ' + date.getDate();
+    let dateString = padding(date.getHours()) + ':' + padding(date.getMinutes()) + ' | ' + months[date.getMonth()] + ' ' + padding(date.getDate());
     return "<div class='d-flex flex-row justify-content-start'>" +
         "<img src='https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava6-bg.webp' alt='avatar 1' style='width: 45px; height: 100%;'>" +
         "<div>" +
@@ -160,7 +167,7 @@ function addSentMessage(message, date) {
 
 function addFriendElement(friend) {
     return "<li class='p-2 border-bottom chatter' id='" + friend.email + "'>" +
-        "<a href='#!' class='d-flex justify-content-between'>" +
+        "<a href='#!' class='d-flex justify-content-between mb-2'>" +
         "<div class='d-flex flex-row'>" +
         "<div>" +
         "<img src='https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava" + count + "-bg.webp' alt='avatar' class='d-flex align-self-center me-3' width='60'>" +
@@ -228,11 +235,15 @@ function updateChatHistory(type, receiver, message, timestamp) {
 }
 
 function notifyMessageReceived(id) {
-    let userNotification = getNotificationArea(id);
-    if (userNotification !== undefined) {
-        let innerHTML = userNotification.innerHTML;
-        if (innerHTML === "") userNotification.innerHTML = 1;
-        else userNotification.innerHTML = (parseInt(innerHTML) + 1).toString();
+    if (friendsMap.get(id).unconfirmed !== 0) {
+        friendsMap.get(id).unconfirmed -= 1
+    } else {
+        let userNotification = getNotificationArea(id);
+        if (userNotification !== undefined) {
+            let innerHTML = userNotification.innerHTML;
+            if (innerHTML === "") userNotification.innerHTML = '1';
+            else userNotification.innerHTML = (parseInt(innerHTML) + 1).toString();
+        }
     }
 }
 
@@ -304,7 +315,7 @@ function calDate(dateString) {
 
 function addSearchListener() {
     let searchInput = document.getElementById('input-search');
-    searchInput.addEventListener('keyup', logKey)
+    searchInput.addEventListener('keyup', findFriend)
 }
 
 function addChatClickListener() {
@@ -317,7 +328,7 @@ function addChatClickListener() {
     })
 }
 
-function logKey(e) {
+function findFriend(e) {
     let keyword = e.target.value;
     let friendsListArea = getFriendsListArea();
     receiver = ''
@@ -325,7 +336,6 @@ function logKey(e) {
     for (let key of friendsMap.keys()) {
         let friend = friendsMap.get(key);
         if (friend.name.includes(keyword)) {
-            console.log(friend)
             friendsListArea.innerHTML += addFriendElement(friend)
         }
     }
@@ -357,6 +367,106 @@ function addDropDownEventByTarget(target, menu, rival, rivalMenu) {
         } else {
             menu.classList.remove('show')
             target.setAttribute('aria-expanded', 'false')
+        }
+    })
+}
+
+function addFriendListener() {
+    const body = document.querySelector('body');
+    const modal = document.querySelector('.my-modal');
+    const btnOpenPopup = document.getElementById('add-friend-addon');
+
+    btnOpenPopup.addEventListener('click', () => {
+        modal.classList.toggle('show');
+
+        if (modal.classList.contains('show')) {
+            let searchBar = document.getElementById('add-friend-search');
+            searchBar.focus()
+            body.style.overflow = 'hidden';
+        }
+    });
+
+    modal.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.classList.toggle('show');
+
+            if (!modal.classList.contains('show')) {
+                body.style.overflow = 'auto';
+            }
+        }
+    });
+
+}
+
+function addFriendSearchListener() {
+    let addFriendSearch = document.getElementById('add-friend-search');
+    addFriendSearch.addEventListener('keyup', friendSearchListener)
+}
+
+function friendSearchListener(ev) {
+    let keyword = ev.target.value;
+    if (keyword.length !== 0) {
+        $.ajax({
+            url: '/v1/social/users',
+            method: 'POST',
+            data: {'keyword': keyword},
+            success: (data, text, request) => {
+                renderSearchResult(data)
+            },
+            error: (err, text, request) => {
+                console.log(err)
+            }
+        })
+    }
+}
+
+function renderSearchResult(data) {
+    let searchList = document.getElementById('search-result-list');
+    searchList.innerHTML = '';
+    for (let user of data) {
+        if (user.email !== sender) {
+            searchList.innerHTML += addSearchResult(user.email, user.name, user.gender, user.age);
+            addFollowRequestListener(user.email);
+        }
+    }
+}
+
+function addSearchResult(email, name, gender, age) {
+    let img = gender === 'FEMALE' ? 1 : 3
+    return "<li class='p-2 border-bottom chatter' id='search-result-" + email + "'>" +
+        "<a href='#!' class='d-flex justify-content-between'>" +
+        "<div class='d-flex flex-row'>" +
+        "<div>" +
+        "<img src='https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava" + img + "-bg.webp' alt='avatar' class='d-flex align-self-center me-3' width='60'>" +
+        "</div>" +
+        "<div class='pt-1'>" +
+        "<p class='fw-bold mb-0' >" + name + "</p>" +
+        "<p class='small text-muted pt-1 fs-6' id='user-age-" + email + "'>" + age + "세</p>" +
+        "</div>" +
+        "</div>" +
+        "<div class='pt-1'>" +
+        "<p class='small text-muted mb-1' id='user-gender-" + email + "'>" + gender + "</p>" +
+        "<button class='btn btn-outline-primary btn-sm' id='request-follow-" + email + "'>신청</button>" +
+        "</div>" +
+        "</a>" +
+        "</li>"
+}
+
+function addFollowRequestListener(id) {
+    let requestButton = document.getElementById('request-follow-' + id);
+    requestButton.addEventListener('click', ev => followRequest(id))
+}
+
+function followRequest(id) {
+    $.ajax({
+        url: '/v1/social/follow',
+        method: 'POST',
+        data: {'following': id},
+        success: (data, text, request) => {
+            console.log(data)
+        },
+        error: (err, text, request) => {
+            console.log(err)
         }
     })
 }

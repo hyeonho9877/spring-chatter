@@ -28,6 +28,11 @@ public class RestSocialController {
         return ResponseEntity.ok(socialService.getUser(username));
     }
 
+    @PostMapping("/users")
+    public ResponseEntity<List<ApplicationUser>> getUsers(String keyword) {
+        return ResponseEntity.ok(socialService.getUsers(keyword));
+    }
+
     @PostMapping("/following")
     public ResponseEntity<List<ApplicationUser>> getFriends(Authentication authentication) {
         String username = (String) authentication.getPrincipal();

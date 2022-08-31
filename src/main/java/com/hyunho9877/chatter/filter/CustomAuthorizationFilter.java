@@ -56,7 +56,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-                    String path = request.getServletPath();
                     filterChain.doFilter(request, response);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -70,4 +69,5 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             }
         }
     }
+
 }
