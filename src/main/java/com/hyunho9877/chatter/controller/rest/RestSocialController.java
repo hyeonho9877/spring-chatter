@@ -13,7 +13,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,6 +27,12 @@ public class RestSocialController {
         return ResponseEntity.ok(socialService.getUser(username));
     }
 
+    @PostMapping("/users")
+    public ResponseEntity<List<ApplicationUser>> getUsers(Authentication authentication, String keyword) {
+        String username = (String) authentication.getPrincipal();
+        return ResponseEntity.ok(socialService.getUsers(username, keyword));
+    }
+
     @PostMapping("/following")
     public ResponseEntity<List<ApplicationUser>> getFriends(Authentication authentication) {
         String username = (String) authentication.getPrincipal();
@@ -39,7 +44,7 @@ public class RestSocialController {
     public ResponseEntity<String> follow(Authentication authentication, String following) {
         String username = (String) authentication.getPrincipal();
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/v1/social/follow").toUriString());
-        return ResponseEntity.created(uri).body(socialService.registerNewFriend(username, following));
+        return ResponseEntity.created(uri).body(socialService.registerNewFollow(username, following));
     }
 
     @PostMapping("/unfollow")

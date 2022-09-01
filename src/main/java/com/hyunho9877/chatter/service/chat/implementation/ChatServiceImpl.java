@@ -1,14 +1,14 @@
 package com.hyunho9877.chatter.service.chat.implementation;
 
-import com.hyunho9877.chatter.domain.ApplicationUser;
 import com.hyunho9877.chatter.domain.ChatMessage;
 import com.hyunho9877.chatter.domain.Exchange;
 import com.hyunho9877.chatter.domain.Friends;
 import com.hyunho9877.chatter.dto.ServerMessage;
+import com.hyunho9877.chatter.dto.ServerMessageType;
 import com.hyunho9877.chatter.dto.UserMessage;
-import com.hyunho9877.chatter.dto.UserStatus;
 import com.hyunho9877.chatter.repo.ChatMessageRepository;
 import com.hyunho9877.chatter.repo.FriendsRepository;
+import com.hyunho9877.chatter.repo.UserRepository;
 import com.hyunho9877.chatter.service.chat.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,12 +17,12 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.crypto.dsig.keyinfo.PGPData;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static com.hyunho9877.chatter.dto.MessageType.*;
+import static com.hyunho9877.chatter.dto.MessageType.RECEIVE;
+import static com.hyunho9877.chatter.dto.MessageType.SEND;
 
 @Service
 @Slf4j
@@ -33,6 +33,7 @@ public class ChatServiceImpl implements ChatService {
     private final RabbitTemplate rabbitTemplate;
     private final ChatMessageRepository messageRepository;
     private final FriendsRepository friendsRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -49,7 +50,7 @@ public class ChatServiceImpl implements ChatService {
 
             Friends bySender;
             Friends byReceiver;
-            if(friendRelation.get(0).getUser1().getEmail().equals(message.getSender())) {
+            if(friendRelation.get(0).getAppUser().getEmail().equals(message.getSender())) {
                 bySender = friendRelation.get(0);
                 byReceiver = friendRelation.get(1);
             } else {
@@ -75,23 +76,23 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public void notifyOnline(String username) {
-        Collection<Friends> friends = friendsRepository.findByUser1OrderByIdAsc(ApplicationUser.builder().email(username).build());
-        friends.stream().map(Friends::getUser2).forEach(friend ->
+        Collection<Friends> friends = friendsRepository.findByUser(username);
+        friends.stream().map(Friends::getAppFriend).forEach(friend ->
             rabbitTemplate.convertAndSend(
                     exchange,
                     friend.getEmail(),
-                    new ServerMessage(UserStatus.ONLINE, username))
+                    new ServerMessage(ServerMessageType.ONLINE, username))
         );
     }
 
     @Override
     public void notifyOffline(String username) {
-        Collection<Friends> friends = friendsRepository.findByUser1OrderByIdAsc(ApplicationUser.builder().email(username).build());
-        friends.stream().map(Friends::getUser2).forEach(friend ->
+        Collection<Friends> friends = friendsRepository.findByUser(username);
+        friends.stream().map(Friends::getAppFriend).forEach(friend ->
             rabbitTemplate.convertAndSend(
                     exchange,
                     friend.getEmail(),
-                    new ServerMessage(UserStatus.OFFLINE, username))
+                    new ServerMessage(ServerMessageType.OFFLINE, username))
         );
     }
 
@@ -137,7 +138,7 @@ public class ChatServiceImpl implements ChatService {
     private void updateConfirmed(String username, String sender){
         List<Friends> friendRelation = friendsRepository.findFriendsBySenderAndReceiver(sender, username);
         Friends relation = friendRelation.get(0);
-        if(relation.getUser1().getEmail().equals(username)) relation.setUnconfirmed(0);
+        if(relation.getAppUser().getEmail().equals(username)) relation.setUnconfirmed(0);
         else {
             relation = friendRelation.get(1);
             relation.setUnconfirmed(0);

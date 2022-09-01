@@ -1,4 +1,4 @@
-package com.hyunho9877.chatter.dto;
+package com.hyunho9877.chatter.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class ServerMessage implements Serializable {
-    private ServerMessageType type;
+@AllArgsConstructor
+public class FriendsKey implements Serializable {
     private String user;
+    private String friend;
 }

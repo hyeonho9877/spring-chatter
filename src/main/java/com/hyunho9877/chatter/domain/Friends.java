@@ -1,42 +1,40 @@
 package com.hyunho9877.chatter.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
-@Entity
-@Getter
-@Setter
-@ToString
-@AllArgsConstructor
-public class Friends {
+@Entity @IdClass(FriendsKey.class)
+@Getter @Setter @ToString
+@AllArgsConstructor @NoArgsConstructor
+public class Friends implements Serializable {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String user;
 
-    @ManyToOne
-    private ApplicationUser user1;
-
-    @ManyToOne
-    private ApplicationUser user2;
+    @Id
+    private String friend;
 
     private Integer unconfirmed;
     private String lastMessage;
     private String lastChattedTime;
 
-    public Friends() {
+    @ManyToOne
+    private ApplicationUser appUser;
+
+    @ManyToOne
+    private ApplicationUser appFriend;
+
+    private Friends(String user, String friend, ApplicationUser appUser, ApplicationUser appFriend) {
+        this.user = user;
+        this.friend = friend;
+        this.appUser = appUser;
+        this.appFriend = appFriend;
     }
 
-    private Friends(ApplicationUser user1, ApplicationUser user2) {
-        this.user1 = user1;
-        this.user2 = user2;
-    }
-
-    public static Friends of(ApplicationUser user1, ApplicationUser user2) {
-        return new Friends(user1, user2);
+    public static Friends of(ApplicationUser user, ApplicationUser friend) {
+        return new Friends(user.getEmail(), friend.getEmail(), user, friend);
     }
 
     @PrePersist
