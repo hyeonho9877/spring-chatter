@@ -1,11 +1,15 @@
 package com.hyunho9877.chatter.domain;
 
-import com.hyunho9877.chatter.dto.UserStatus;
+import com.hyunho9877.chatter.dto.ServerMessageType;
 import com.hyunho9877.chatter.utils.converter.GenderConverter;
 import com.hyunho9877.chatter.utils.converter.RoleConverter;
 import com.hyunho9877.chatter.utils.ws.WebSocketSessionManager;
 import lombok.*;
-import javax.persistence.*;
+
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.io.Serializable;
 
 @Entity
@@ -26,13 +30,15 @@ public class ApplicationUser implements Serializable {
     @Convert(converter = RoleConverter.class)
     private Role role;
     @Transient
-    private UserStatus onlineStatus;
+    private ServerMessageType onlineStatus;
     @Transient
     private int unconfirmed;
     @Transient
     private String lastMessage;
     @Transient
     private String lastChatted;
+    @Transient
+    private boolean isFriend;
 
     public static ApplicationUser getPublicProfile(Friends friend) {
         ApplicationUser user = friend.getAppFriend();

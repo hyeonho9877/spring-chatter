@@ -1,13 +1,13 @@
 package com.hyunho9877.chatter.utils.ws;
 
-import com.hyunho9877.chatter.dto.UserStatus;
+import com.hyunho9877.chatter.dto.ServerMessageType;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.hyunho9877.chatter.dto.UserStatus.OFFLINE;
-import static com.hyunho9877.chatter.dto.UserStatus.ONLINE;
+import static com.hyunho9877.chatter.dto.ServerMessageType.OFFLINE;
+import static com.hyunho9877.chatter.dto.ServerMessageType.ONLINE;
 
 @Component
 public class WebSocketSessionManager {
@@ -25,7 +25,7 @@ public class WebSocketSessionManager {
         assert !sessions.contains(username);
     }
 
-    public static UserStatus isSessionExists(String username) {
+    public static ServerMessageType isSessionExists(String username) {
         return sessions.contains(username) ? ONLINE : OFFLINE;
     }
 }

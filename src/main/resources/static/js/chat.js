@@ -11,16 +11,17 @@ let messageList = new Map();
 let friendsMap = new Map()
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-const Status = {
+const MessageType = {
     ONLINE: "ONLINE",
-    OFFLINE: "OFFLINE"
+    OFFLINE: "OFFLINE",
+    NTF: "NTF"
 }
 
 class Friend {
 
     constructor(onlineStatus, email, name, unconfirmed, lastTime, lastMessage) {
-        if (onlineStatus === Status.ONLINE) this._onlineStatus = Status.ONLINE
-        else this._onlineStatus = Status.OFFLINE
+        if (onlineStatus === MessageType.ONLINE) this._onlineStatus = MessageType.ONLINE
+        else this._onlineStatus = MessageType.OFFLINE
         this._email = email;
         this._name = name;
         this._unconfirmed = unconfirmed;
@@ -98,20 +99,24 @@ function subscribe() {
         sender = frame.headers['user-name']
         stomp.subscribe('/queue/' + frame.headers['user-name'], response => {
             let body = JSON.parse(response.body);
-            if (body.type === Status.ONLINE || body.type === Status.OFFLINE) {
+            if (body.type === MessageType.ONLINE || body.type === MessageType.OFFLINE || body.type === MessageType.NTF) {
                 let user = body.user;
                 let userStatus = document.getElementById('status-' + user);
                 let classes = userStatus.classList;
-                if (body.type === Status.ONLINE) {
+                if (body.type === MessageType.ONLINE) {
                     if (classes.contains('bg-danger')) {
                         classes.remove('bg-danger')
                         classes.add('bg-success')
                     }
-                } else {
+                } else if (body.type === MessageType.OFFLINE) {
                     if (classes.contains('bg-success')) {
                         classes.remove('bg-success')
                         classes.add('bg-danger')
                     }
+                } else {
+                    let notification = document.getElementById('badge-notification');
+                    let currentNotification = notification.innerHTML === '' ? 0 : parseInt(notification.innerHTML);
+                    notification.innerHTML = (currentNotification + 1).toString()
                 }
             } else {
                 if (receiver !== body.sender) {
@@ -171,7 +176,7 @@ function addFriendElement(friend) {
         "<div class='d-flex flex-row'>" +
         "<div>" +
         "<img src='https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava" + count + "-bg.webp' alt='avatar' class='d-flex align-self-center me-3' width='60'>" +
-        (friend.onlineStatus === Status.ONLINE ? "<span class='badge bg-success badge-dot' id='status-" + friend.email + "'></span>" : "<span class='badge bg-danger badge-dot' id='status-" + friend.email + "'></span>") +
+        (friend.onlineStatus === MessageType.ONLINE ? "<span class='badge bg-success badge-dot' id='status-" + friend.email + "'></span>" : "<span class='badge bg-danger badge-dot' id='status-" + friend.email + "'></span>") +
         "</div>" +
         "<div class='pt-1'>" +
         "<p class='fw-bold mb-0' >" + friend.name + "</p>" +
@@ -425,13 +430,13 @@ function renderSearchResult(data) {
     searchList.innerHTML = '';
     for (let user of data) {
         if (user.email !== sender) {
-            searchList.innerHTML += addSearchResult(user.email, user.name, user.gender, user.age);
+            searchList.innerHTML += addSearchResult(user.email, user.name, user.gender, user.age, user.friend);
             addFollowRequestListener(user.email);
         }
     }
 }
 
-function addSearchResult(email, name, gender, age) {
+function addSearchResult(email, name, gender, age, isFriend) {
     let img = gender === 'FEMALE' ? 1 : 3
     return "<li class='p-2 border-bottom chatter' id='search-result-" + email + "'>" +
         "<a href='#!' class='d-flex justify-content-between'>" +
@@ -446,7 +451,7 @@ function addSearchResult(email, name, gender, age) {
         "</div>" +
         "<div class='pt-1'>" +
         "<p class='small text-muted mb-1' id='user-gender-" + email + "'>" + gender + "</p>" +
-        "<button class='btn btn-outline-primary btn-sm' id='request-follow-" + email + "'>신청</button>" +
+        (isFriend === true ? '' : "<button class='btn btn-outline-primary btn-sm' id='request-follow-" + email + "'>신청</button>") +
         "</div>" +
         "</a>" +
         "</li>"

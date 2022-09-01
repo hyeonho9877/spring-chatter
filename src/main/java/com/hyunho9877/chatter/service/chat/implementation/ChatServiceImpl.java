@@ -4,8 +4,8 @@ import com.hyunho9877.chatter.domain.ChatMessage;
 import com.hyunho9877.chatter.domain.Exchange;
 import com.hyunho9877.chatter.domain.Friends;
 import com.hyunho9877.chatter.dto.ServerMessage;
+import com.hyunho9877.chatter.dto.ServerMessageType;
 import com.hyunho9877.chatter.dto.UserMessage;
-import com.hyunho9877.chatter.dto.UserStatus;
 import com.hyunho9877.chatter.repo.ChatMessageRepository;
 import com.hyunho9877.chatter.repo.FriendsRepository;
 import com.hyunho9877.chatter.repo.UserRepository;
@@ -21,7 +21,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static com.hyunho9877.chatter.dto.MessageType.*;
+import static com.hyunho9877.chatter.dto.MessageType.RECEIVE;
+import static com.hyunho9877.chatter.dto.MessageType.SEND;
 
 @Service
 @Slf4j
@@ -80,7 +81,7 @@ public class ChatServiceImpl implements ChatService {
             rabbitTemplate.convertAndSend(
                     exchange,
                     friend.getEmail(),
-                    new ServerMessage(UserStatus.ONLINE, username))
+                    new ServerMessage(ServerMessageType.ONLINE, username))
         );
     }
 
@@ -91,7 +92,7 @@ public class ChatServiceImpl implements ChatService {
             rabbitTemplate.convertAndSend(
                     exchange,
                     friend.getEmail(),
-                    new ServerMessage(UserStatus.OFFLINE, username))
+                    new ServerMessage(ServerMessageType.OFFLINE, username))
         );
     }
 
